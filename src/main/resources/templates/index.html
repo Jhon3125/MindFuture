@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Future | Terapia Inmersiva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Transforma tu bienestar emocional con tecnología inmersiva</h1>
+            <p>Terapia accesible, anónima y gamificada para tu mente.</p>
+            <a href="#signup" class="btn-primary">Empieza Ahora</a>
+        </div>
+        <div class="hero-image">
+            <img src="img/terapia-principal.png" alt="Terapia VR">
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature-card" id="vr-therapy">
+            <img src="img/vr-glasses.svg" alt="VR Therapy">
+            <h3>VR Therapy Hub</h3>
+            <p>Entornos 3D interactivos con avatares y terapeutas profesionales.</p>
+        </div>
+        <div class="feature-card" id="mood-tracker">
+            <img src="img/MoodTracker.png" alt="Mood Tracker">
+            <h3>Mood Tracker con IA</h3>
+            <p>Analiza tu estado emocional con wearables y recomendaciones en tiempo real.</p>
+        </div>
+        <div class="feature-card" id="mindfulness-game">
+            <img src="img/Mindfulness.png" alt="Mindfulness Game">
+            <h3>Mindfulness Game Journey</h3>
+            <p>Gamificación de ejercicios terapéuticos para mejorar tu adherencia.</p>
+        </div>
+    </section>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>
