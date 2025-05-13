@@ -1,17 +1,20 @@
 package com.example.mindfuture.services;
 
 import java.util.Comparator;
+import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.mindfuture.model.ActividadUsuario;
 import com.example.mindfuture.model.Logro;
 import com.example.mindfuture.model.MindfulnessActividad;
 import com.example.mindfuture.model.NivelMindfulness;
 import com.example.mindfuture.model.Usuario;
 import com.example.mindfuture.model.UsuarioLogro;
 import com.example.mindfuture.model.UsuarioProgreso;
+import com.example.mindfuture.repository.ActividadUsuarioRepository;
 import com.example.mindfuture.repository.LogroRepository;
 import com.example.mindfuture.repository.MindfulnessActividadRepository;
 import com.example.mindfuture.repository.NivelMindfulnessRepository;
@@ -25,6 +28,7 @@ public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final NivelMindfulnessRepository nivelMindfulnessRepository;
     private final MindfulnessActividadRepository actividadRepository;
+    private final ActividadUsuarioRepository actividadUsuarioRepository;
     private final UsuarioProgresoRepository progresoRepository;
     private final LogroRepository logroRepository;
     private final UsuarioLogrosRepository usuarioLogrosRepository;
@@ -33,6 +37,7 @@ public class AuthService {
     public AuthService(UsuarioRepository usuarioRepository,
             NivelMindfulnessRepository nivelMindfulnessRepository,
             MindfulnessActividadRepository actividadRepository,
+            ActividadUsuarioRepository actividadUsuarioRepository,
             UsuarioProgresoRepository progresoRepository,
             PasswordEncoder passwordEncoder,
             LogroRepository logroRepository,
@@ -40,6 +45,7 @@ public class AuthService {
         this.usuarioRepository = usuarioRepository;
         this.nivelMindfulnessRepository = nivelMindfulnessRepository;
         this.actividadRepository = actividadRepository;
+        this.actividadUsuarioRepository = actividadUsuarioRepository;
         this.progresoRepository = progresoRepository;
         this.passwordEncoder = passwordEncoder;
         this.logroRepository = logroRepository;
@@ -48,30 +54,22 @@ public class AuthService {
 
     @Transactional
     public void registerNewUser(Usuario usuario) {
-        // Verificar si el email ya existe
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new RuntimeException("El email ya está en uso");
         }
 
-        // Configurar valores por defecto
         usuario.setContraseña(passwordEncoder.encode(usuario.getContraseña()));
         usuario.setRol(Usuario.Rol.usuario);
 
-        // Guardar el usuario
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
-
-        // Inicializar datos relacionados
         inicializarDatosUsuario(usuarioGuardado);
-
         asignarLogroBienvenida(usuarioGuardado);
     }
 
     private void asignarLogroBienvenida(Usuario usuario) {
-        // Buscar el logro de bienvenida por su condición
         Logro logroBienvenida = logroRepository.findByCondicion("FIRST_LOGIN")
-                .orElseThrow(() -> new RuntimeException("Logro de bienvenida no configurado en la base de datos"));
+                .orElseThrow(() -> new RuntimeException("Logro de bienvenida no configurado"));
 
-        // Crear y guardar la relación usuario-logro
         UsuarioLogro usuarioLogro = new UsuarioLogro();
         usuarioLogro.setUsuario(usuario);
         usuarioLogro.setLogro(logroBienvenida);
@@ -79,16 +77,16 @@ public class AuthService {
     }
 
     private void inicializarDatosUsuario(Usuario usuario) {
-        // Crear niveles de mindfulness iniciales si no existen
         if (nivelMindfulnessRepository.count() == 0) {
             crearNivelesIniciales();
         }
 
-        // Asignar progreso inicial al usuario
         asignarProgresoInicial(usuario);
+        inicializarActividadesUsuario(usuario);
     }
 
     private void crearNivelesIniciales() {
+        // Nivel Principiante
         NivelMindfulness nivel1 = new NivelMindfulness();
         nivel1.setNombre("Principiante");
         nivel1.setDescripcion("Nivel inicial para nuevos usuarios");
@@ -96,13 +94,15 @@ public class AuthService {
         nivel1.setOrden(1);
         nivelMindfulnessRepository.save(nivel1);
 
+        // Nivel Intermedio
         NivelMindfulness nivel2 = new NivelMindfulness();
         nivel2.setNombre("Intermedio");
-        nivel2.setDescripcion("Nivel para usuarios con algo de experiencia");
+        nivel2.setDescripcion("Nivel para usuarios con experiencia básica");
         nivel2.setEstrellasRequeridas(10);
         nivel2.setOrden(2);
         nivelMindfulnessRepository.save(nivel2);
 
+        // Nivel Avanzado
         NivelMindfulness nivel3 = new NivelMindfulness();
         nivel3.setNombre("Avanzado");
         nivel3.setDescripcion("Nivel para usuarios experimentados");
@@ -110,11 +110,11 @@ public class AuthService {
         nivel3.setOrden(3);
         nivelMindfulnessRepository.save(nivel3);
 
-        // Crear actividades iniciales
         crearActividadesIniciales(nivel1);
     }
 
     private void crearActividadesIniciales(NivelMindfulness nivel) {
+        // Actividad 1 - Respiración
         MindfulnessActividad actividad1 = new MindfulnessActividad();
         actividad1.setNivel(nivel);
         actividad1.setNombre("Respiración básica");
@@ -124,6 +124,7 @@ public class AuthService {
         actividad1.setDuracionEstimada(5);
         actividadRepository.save(actividad1);
 
+        // Actividad 2 - Relajación
         MindfulnessActividad actividad2 = new MindfulnessActividad();
         actividad2.setNivel(nivel);
         actividad2.setNombre("Relajación guiada");
@@ -145,7 +146,23 @@ public class AuthService {
         progreso.setNivel(nivelInicial);
         progreso.setEstrellasAcumuladas(0);
         progreso.setCompletado(false);
-
         progresoRepository.save(progreso);
+    }
+
+    private void inicializarActividadesUsuario(Usuario usuario) {
+        NivelMindfulness nivelInicial = nivelMindfulnessRepository.findAll()
+                .stream()
+                .min(Comparator.comparing(NivelMindfulness::getOrden))
+                .orElseThrow(() -> new RuntimeException("No se encontraron niveles"));
+
+        List<MindfulnessActividad> actividades = actividadRepository.findByNivel(nivelInicial);
+
+        actividades.forEach(actividad -> {
+            ActividadUsuario actividadUsuario = new ActividadUsuario();
+            actividadUsuario.setUsuario(usuario);
+            actividadUsuario.setActividad(actividad);
+            actividadUsuario.setCompletado(false);
+            actividadUsuarioRepository.save(actividadUsuario);
+        });
     }
 }

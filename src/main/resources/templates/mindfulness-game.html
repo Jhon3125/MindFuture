@@ -15,6 +15,11 @@
     <div th:replace="~{fragments/header :: header}"></div>
 
     <main class="game-container">
+        <!-- Mensaje de error -->
+        <div th:if="${error != null}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+
         <!-- Sección de progreso -->
         <section class="progress-section">
             <h2>Tu Viaje Mindfulness</h2>
@@ -37,30 +42,26 @@
                 <div class="badge" th:classappend="${nivelActual == 'Intermedio'} ? 'active' : ''">
                     <i class="fas fa-leaf"></i> Intermedio
                 </div>
-                <div class="badge" th:classappend="${nivelActual == 'Experto'} ? 'active' : ''">
-                    <i class="fas fa-tree"></i> Experto
+                <div class="badge" th:classappend="${nivelActual == 'Avanzado'} ? 'active' : ''">
+                    <i class="fas fa-tree"></i> Avanzado
                 </div>
             </div>
         </section>
 
-        <!-- Sección de estrellas (versión mejorada) -->
+        <!-- Sección de estrellas -->
         <section class="stars-section">
             <div class="stars-header">
                 <h3><i class="fas fa-star"></i> Tus Puntos</h3>
             </div>
-            <div class="stars-display" th:with="
-        stars=${T(java.lang.Integer).valueOf(estrellasTotales ?: 0)},
-        estrellasCompletas=${stars / 20},
-        estrellasRestantes=${20 - (stars % 20)}">
-
-                <div class="stars-count" th:text="${stars}"></div>
+            <div class="stars-display" th:with="stars=${T(java.lang.Integer).valueOf(estrellasTotales ?: 0)}">
+                <div class="stars-count" th:text="${stars} + ' estrellas'"></div>
                 <div class="stars-visual">
                     <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                        <i class="fas fa-star" th:classappend="${i <= estrellasCompletas} ? 'gold' : 'gray'"></i>
+                        <i class="fas fa-star" th:classappend="${i <= (stars / 20)} ? 'gold' : 'gray'"></i>
                     </th:block>
                 </div>
-                <div class="stars-progress" th:if="${estrellasRestantes > 0 and estrellasRestantes < 20}">
-                    <span th:text="|Próxima recompensa en ${estrellasRestantes} estrellas|"></span>
+                <div class="stars-progress" th:if="${(20 - (stars % 20)) > 0 and (20 - (stars % 20)) < 20}">
+                    <span th:text="|Próxima recompensa en ${20 - (stars % 20)} estrellas|"></span>
                 </div>
             </div>
         </section>
@@ -68,25 +69,38 @@
         <!-- Juegos disponibles -->
         <section class="games-grid">
             <h3>Actividades Disponibles</h3>
-            <div th:each="actividad : ${actividadesDisponibles}" class="game-card"
-                th:classappend="${#lists.contains(actividadesCompletadas.![id], actividad.id)} ? 'completed' : ''">
-                <div class="game-icon" th:classappend="${actividad.tipo}">
-                    <i th:class="${actividad.tipo == 'respiracion'} ? 'fas fa-wind' : 
-                                ${actividad.tipo == 'relajacion'} ? 'fas fa-spa' : 'fas fa-music'"></i>
+            <div th:each="actividad : ${actividadesDisponibles}" th:if="${actividad != null}" class="game-card"
+                th:classappend="${actividadesCompletadasIds != null and #lists.contains(actividadesCompletadasIds, actividad.idActividad)} ? 'completed' : ''">
+
+                <div class="game-icon" th:classappend="${actividad.tipo?.name()?.toLowerCase()}">
+                    <i
+                        th:class="${'fas ' + (actividad.tipo?.name()?.toLowerCase() == 'respiracion' ? 'fa-wind' : 
+                                         actividad.tipo?.name()?.toLowerCase() == 'relajacion' ? 'fa-spa' : 'fa-music')}"></i>
                 </div>
-                <h4 th:text="${actividad.nombre}"></h4>
+
+                <h4 th:text="${actividad.nombre} ?: 'Actividad sin nombre'"></h4>
+
                 <p class="activity-info">
-                    <span th:text="${actividad.duracionEstimada} + ' min'"></span>
-                    <span class="stars-reward" th:text="${actividad.estrellasRecompensa} + ' ★'"></span>
+                <p class="activity-info">
+                    <span th:text="${actividad.duracionEstimada ?: 0} + ' min'"></span>
+                    <span class="stars-reward" th:text="${actividad.estrellasRecompensa ?: 0} + ' ★'"></span>
                 </p>
-                <button class="btn-play">Comenzar</button>
-                <div th:if="${#lists.contains(actividadesCompletadas.![id], actividad.id)}" class="game-completed">
+                </p>
+
+                <button class="btn-play" th:attr="data-activity-id=${actividad.idActividad}">Comenzar</button>
+
+                <div th:if="${actividadesCompletadasIds != null and #lists.contains(actividadesCompletadasIds, actividad.idActividad)}"
+                    class="game-completed">
                     <i class="fas fa-check-circle"></i> Completado
                 </div>
             </div>
+
+            <div th:if="${actividadesDisponibles == null or actividadesDisponibles.empty}" class="no-activities">
+                <p>No hay actividades disponibles en este momento.</p>
+            </div>
         </section>
 
-        <!-- Panel de logros (versión mejorada) -->
+        <!-- Panel de logros -->
         <section class="achievements">
             <div class="achievements-header">
                 <h3><i class="fas fa-trophy"></i> Logros</h3>
@@ -94,20 +108,24 @@
                     th:text="${logrosUsuario != null ? #lists.size(logrosUsuario) : 0} + '/15'"></div>
             </div>
             <div class="achievements-grid">
-                <!-- Logros desbloqueados con verificación de null -->
-                <div th:if="${logrosUsuario != null and not logrosUsuario.empty}" th:each="logro : ${logrosUsuario}"
+                <div th:each="usuarioLogro : ${logrosUsuario}"
+                    th:if="${logrosUsuario != null and not logrosUsuario.empty and usuarioLogro != null and usuarioLogro.logro != null}"
                     class="achievement unlocked">
+
                     <div class="achievement-icon">
                         <i class="fas fa-award"></i>
                     </div>
                     <div class="achievement-info">
-                        <h5 th:text="${logro.logro != null ? logro.logro.nombre : 'Logro no disponible'}"></h5>
-                        <p th:text="${logro.logro != null ? logro.logro.descripcion : 'Descripción no disponible'}"></p>
+                        <h5 th:text="${usuarioLogro.logro.nombre} ?: 'Logro sin nombre'"></h5>
+                        <p th:text="${usuarioLogro.logro.descripcion} ?: 'Descripción no disponible'"></p>
+                        <small class="achievement-date"
+                            th:text="${usuarioLogro.fechaDesbloqueo != null ? #dates.format(usuarioLogro.fechaDesbloqueo, 'dd MMM yyyy') : 'Fecha no disponible'}"></small>
                     </div>
                 </div>
 
-                <!-- Logros bloqueados con cálculo seguro -->
-                <div th:with="totalLogros=${logrosUsuario != null ? #lists.size(logrosUsuario) : 0}, logrosFaltantes=${15 - totalLogros}" th:if="${logrosFaltantes > 0}">
+                <div th:with="totalLogros=${logrosUsuario != null ? #lists.size(logrosUsuario) : 0}, 
+                              logrosFaltantes=${15 - totalLogros}" th:if="${logrosFaltantes > 0}">
+
                     <div th:each="i : ${#numbers.sequence(1, logrosFaltantes)}" class="achievement locked">
                         <div class="achievement-icon">
                             <i class="fas fa-lock"></i>
@@ -118,11 +136,30 @@
                         </div>
                     </div>
                 </div>
+
+                <div th:if="${logrosUsuario == null or logrosUsuario.empty}" class="no-achievements">
+                    <p>Aún no tienes logros desbloqueados.</p>
+                </div>
             </div>
         </section>
     </main>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Script mejorado para manejar el botón Comenzar -->
+    <script th:inline="javascript">
+        document.querySelectorAll('.btn-play').forEach(button => {
+            button.addEventListener('click', function () {
+                const activityId = this.getAttribute('data-activity-id');
+                if (activityId) {
+                    console.log('Iniciando actividad con ID:', activityId);
+                    // window.location.href = '/actividad/' + activityId;
+                } else {
+                    console.error('No se pudo obtener el ID de la actividad');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

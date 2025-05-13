@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 public class MindfulnessActividad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_actividad")
     private Integer idActividad;
 
     @ManyToOne

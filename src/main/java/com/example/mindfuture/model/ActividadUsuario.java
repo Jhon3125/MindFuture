@@ -25,23 +25,24 @@ import lombok.NoArgsConstructor;
 public class ActividadUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_actividad_usuario")
     private Integer idActividadUsuario;
-    
+
     @ManyToOne
-    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario" , nullable = false)
+    @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario", nullable = false)
     private Usuario usuario;
-    
+
     @ManyToOne
-    @JoinColumn(name = "id_actividad", nullable = false)
+    @JoinColumn(name = "id_actividad", referencedColumnName = "id_actividad", nullable = false)
     private MindfulnessActividad actividad;
-    
+
     @Column(name = "fecha_realizacion", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaRealizacion;
-    
+
     @Column(nullable = false)
     private Boolean completado = false;
-    
+
     @PrePersist
     protected void onCreate() {
         fechaRealizacion = new Date();

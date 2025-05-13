@@ -25,9 +25,4 @@ public class HomeController {
     public String moodTracker() {
         return "mood-tracker";
     }
-
-    @GetMapping("/mindfulness-game")
-    public String mindfulnessGame() {
-        return "mindfulness-game";
-    }
 }

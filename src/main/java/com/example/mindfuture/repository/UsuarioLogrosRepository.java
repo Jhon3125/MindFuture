@@ -10,7 +10,5 @@ import com.example.mindfuture.model.UsuarioLogro;
 
 @Repository
 public interface UsuarioLogrosRepository extends JpaRepository<UsuarioLogro, Integer> {
-    List<UsuarioLogro> findByIdUsuario(Usuario usuario);
-
-    int countByIdUsuario(Usuario usuario);
+    List<UsuarioLogro> findByUsuario(Usuario usuario);
 }

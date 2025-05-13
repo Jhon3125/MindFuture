@@ -1,330 +1,219 @@
-/* ---- Variables de colores ---- */
-.gold { color: #FFD700; }
-.gray { color: #CCCCCC; }
-.active { background-color: #4299e1; color: white; }
-.completed { background-color: #f0fff4; }
-
-/* ---- Mindfulness Game Styles ---- */
+/* Estilos base */
 .game-container {
     max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 2rem;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-/* Estilos mejorados para la sección de progreso */
+/* Sección de progreso */
 .progress-section {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
 }
 
 .progress-info {
-    margin-bottom: 1.5rem;
-}
-
-.level-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #4a5568;
-}
-
-.current-level {
-    color: #2d3748;
-}
-
-.next-level {
-    color: #718096;
-    font-size: 0.9rem;
+    margin: 20px 0;
 }
 
 .progress-container {
+    background: #e9ecef;
+    border-radius: 20px;
     height: 20px;
-    background-color: #e2e8f0;
-    border-radius: 10px;
-    overflow: hidden;
+    margin: 10px 0;
 }
 
 .progress-bar {
+    background: #4CAF50;
+    border-radius: 20px;
     height: 100%;
-    background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
-    border-radius: 10px;
-    transition: width 0.5s ease;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     padding-right: 10px;
     color: white;
-    font-size: 0.8rem;
     font-weight: bold;
+    transition: width 0.5s ease;
 }
 
 .badges {
     display: flex;
     justify-content: space-around;
-    margin-top: 1.5rem;
+    margin-top: 20px;
 }
 
 .badge {
-    padding: 0.5rem 1rem;
+    padding: 10px 15px;
     border-radius: 20px;
-    background-color: #edf2f7;
-    color: #4a5568;
-    font-size: 0.9rem;
+    background: #e9ecef;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
 .badge.active {
-    background-color: #4299e1;
+    background: #4CAF50;
     color: white;
 }
 
-/* Estilos mejorados para las estrellas */
+/* Sección de estrellas */
 .stars-section {
-    background-color: white;
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.stars-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-
-.stars-tooltip {
-    color: #a0aec0;
-    cursor: help;
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
 }
 
 .stars-display {
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.stars-count {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #2d3748;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .stars-visual {
     display: flex;
-    gap: 0.3rem;
+    gap: 5px;
 }
 
 .stars-visual i {
-    color: #e2e8f0;
-    font-size: 1.2rem;
+    font-size: 24px;
 }
 
 .stars-visual i.gold {
-    color: #f6e05e;
+    color: gold;
 }
 
-.stars-progress {
-    font-size: 0.9rem;
-    color: #718096;
+.stars-visual i.gray {
+    color: #e9ecef;
 }
 
-/* Estilos mejorados para las actividades */
+/* Juegos disponibles */
 .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .game-card {
-    background-color: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: relative;
-    overflow: hidden;
+    transition: transform 0.3s ease;
 }
 
 .game-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.game-card.completed {
+    opacity: 0.8;
+    border-left: 5px solid #4CAF50;
 }
 
 .game-icon {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
+    margin-bottom: 15px;
     color: white;
+    font-size: 20px;
 }
 
 .game-icon.respiracion {
-    background-color: #4299e1;
+    background: #2196F3;
 }
 
 .game-icon.relajacion {
-    background-color: #9f7aea;
+    background: #9C27B0;
 }
 
 .game-icon.meditacion {
-    background-color: #f56565;
-}
-
-.game-icon i.animated {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-.game-card h4 {
-    margin: 0.5rem 0;
-    color: #2d3748;
-}
-
-.activity-info {
-    display: flex;
-    justify-content: space-between;
-    color: #718096;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-}
-
-.stars-reward {
-    color: #f6e05e;
-    font-weight: bold;
+    background: #FF9800;
 }
 
 .btn-play {
-    width: 100%;
-    padding: 0.5rem;
-    border: none;
-    border-radius: 6px;
-    background-color: #48bb78;
+    background: #4CAF50;
     color: white;
-    font-weight: 600;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-play:hover {
-    background-color: #38a169;
+    margin-top: 15px;
+    width: 100%;
 }
 
 .game-completed {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #48bb78;
-    color: white;
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
+    color: #4CAF50;
+    font-size: 20px;
 }
 
-/* Estilos mejorados para logros */
+/* Panel de logros */
 .achievements {
-    background-color: white;
-    border-radius: 15px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.achievements-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.achievements-count {
-    background-color: #edf2f7;
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    color: #4a5568;
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
 }
 
 .achievements-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
+    gap: 15px;
+    margin-top: 20px;
 }
 
 .achievement {
-    padding: 1rem;
+    background: white;
     border-radius: 10px;
+    padding: 15px;
     display: flex;
-    gap: 1rem;
+    gap: 15px;
     align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .achievement.unlocked {
-    background-color: #ebf8ff;
-    border-left: 4px solid #3182ce;
+    border-left: 5px solid #4CAF50;
 }
 
 .achievement.locked {
-    background-color: #f7fafc;
-    border-left: 4px solid #e2e8f0;
     opacity: 0.7;
 }
 
 .achievement-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.achievement.unlocked .achievement-icon {
-    background-color: #bee3f8;
-    color: #3182ce;
+    font-size: 24px;
+    color: #FFC107;
 }
 
 .achievement.locked .achievement-icon {
-    background-color: #edf2f7;
-    color: #a0aec0;
+    color: #6C757D;
 }
 
-.achievement-info h5 {
-    margin: 0;
-    color: #2d3748;
+.achievement-info {
+    flex: 1;
 }
 
-.achievement-info p {
-    margin: 0.3rem 0 0;
-    color: #718096;
-    font-size: 0.9rem;
+.achievement-date {
+    color: #6C757D;
+    font-size: 0.8em;
+}
+
+.activity-info span {
+    margin-right: 10px;
+    /* Espacio entre duración y estrellas */
+}
+
+.stars-reward {
+    color: gold;
+    /* Color dorado para las estrellas */
+    font-weight: bold;
 }
