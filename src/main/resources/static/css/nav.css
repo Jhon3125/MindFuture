@@ -1,0 +1,249 @@
+/* Variables de color */
+:root {
+    --primary-color: #4a6fa5;       /* Azul principal */
+    --secondary-color: #6b8cae;     /* Azul secundario */
+    --accent-color: #6c63ff;        /* Morado para efectos */
+    --light-color: #f8f9fa;         /* Fondo claro */
+    --dark-color: #343a40;         /* Texto oscuro */
+    --danger-color: #dc3545;       /* Rojo para logout */
+    --transition-speed: 0.3s;      /* Velocidad de transiciones */
+}
+
+/* Header principal */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 1000;
+}
+
+/* Logo con efectos interactivos */
+.logo img {
+    height: clamp(60px, 8vw, 100px);
+    width: auto;
+    transition: all var(--transition-speed) ease;
+}
+
+.logo:hover img {
+    transform: scale(1.05);
+    filter: drop-shadow(0 2px 4px rgba(108, 99, 255, 0.3));
+}
+
+/* Navegación principal */
+.main-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav li {
+    position: relative;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: var(--dark-color);
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: color var(--transition-speed) ease;
+    padding: 0.5rem 0;
+}
+
+.main-nav a:hover {
+    color: var(--primary-color);
+}
+
+/* Efecto subrayado al pasar el mouse */
+.main-nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width var(--transition-speed) ease;
+}
+
+.main-nav a:hover::after {
+    width: 100%;
+}
+
+/* Nombre de usuario */
+.user-name {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
+}
+
+/* Botones de autenticación */
+/* Botones de autenticación - Versión mejorada */
+.auth-buttons {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.btn-auth {
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    font-size: 1rem;
+    text-align: center;
+    min-width: 120px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-auth:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-auth:active {
+    transform: translateY(-1px);
+}
+
+.btn-auth::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+}
+
+.btn-auth:hover::before {
+    left: 100%;
+}
+
+/* Botón de Login específico */
+.btn-login {
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 2px 4px rgba(74, 111, 165, 0.2);
+}
+
+.btn-login:hover {
+    background: rgba(74, 111, 165, 0.05);
+    color: var(--primary-color);
+}
+
+/* Botón de Registro específico */
+.btn-register {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    position: relative;
+}
+
+.btn-register::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+    z-index: -1;
+}
+
+.btn-register:hover::after {
+    opacity: 1;
+}
+
+/* Iconos para los botones (opcional) */
+.btn-auth i {
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+/* Versión mobile */
+@media (max-width: 768px) {
+    .auth-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+    }
+    
+    .btn-auth {
+        width: 100%;
+        padding: 0.8rem;
+    }
+}
+
+/* Botón de logout */
+.btn-logout {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-logout:hover {
+    color: #c82333;
+    transform: translateY(-2px);
+}
+
+/* Formulario de logout */
+.logout-form {
+    margin: 0;
+    display: inline;
+}
+
+/* Responsive para tablets */
+@media (max-width: 992px) {
+    .main-nav ul {
+        gap: 1.5rem;
+    }
+    
+    .auth-buttons {
+        gap: 0.8rem;
+    }
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .logo img {
+        height: 70px;
+        margin-bottom: 1rem;
+    }
+    
+    .main-nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .auth-buttons {
+        margin-top: 1rem;
+    }
+}

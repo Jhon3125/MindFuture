@@ -1,30 +1,31 @@
 package com.example.mindfuture.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class home {
+public class HomeController {
 
-    // Página principal
-    @GetMapping("/")
-    public String home() {
-        return "index"; // Carga src/main/resources/templates/index.html
+    // Página principal accesible sin login
+    @GetMapping({ "/", "/index" })
+    public String home(Model model) {
+        // Puedes agregar lógica para mostrar contenido diferente a usuarios
+        // autenticados
+        return "index";
     }
 
-    // Módulo VR Therapy
+    // Otras rutas protegidas (requieren login)
     @GetMapping("/vr-therapy")
     public String vrTherapy() {
-        return "vr-therapy"; // Carga vr-therapy.html
+        return "vr-therapy";
     }
 
-    // Módulo Mood Tracker
     @GetMapping("/mood-tracker")
     public String moodTracker() {
         return "mood-tracker";
     }
 
-    // Módulo Mindfulness Game
     @GetMapping("/mindfulness-game")
     public String mindfulnessGame() {
         return "mindfulness-game";

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindfulness Game Journey | Mind Future</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/nav.css}">
+    <link rel="stylesheet" th:href="@{/css/games.css}">
+</head>
+
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="game-container">
+        <!-- Sección de progreso -->
+        <section class="progress-section">
+            <h2>Tu Viaje Mindfulness</h2>
+            <div class="progress-info">
+                <div class="level-info">
+                    <span class="current-level" th:text="${nivelActual ?: 'Principiante'}"></span>
+                    <span class="next-level" th:text="'→ ' + (${proximoNivel ?: 'Intermedio'})"></span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" th:style="'width:' + (${porcentajeCompletado ?: 0}) + '%;'">
+                        <span th:text="${#numbers.formatDecimal(porcentajeCompletado ?: 0, 1, 2)} + '%'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="badges">
+                <div class="badge" th:classappend="${nivelActual == 'Principiante'} ? 'active' : ''">
+                    <i class="fas fa-seedling"></i> Principiante
+                </div>
+                <div class="badge" th:classappend="${nivelActual == 'Intermedio'} ? 'active' : ''">
+                    <i class="fas fa-leaf"></i> Intermedio
+                </div>
+                <div class="badge" th:classappend="${nivelActual == 'Experto'} ? 'active' : ''">
+                    <i class="fas fa-tree"></i> Experto
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de estrellas (versión mejorada) -->
+        <section class="stars-section">
+            <div class="stars-header">
+                <h3><i class="fas fa-star"></i> Tus Puntos</h3>
+            </div>
+            <div class="stars-display" th:with="
+        stars=${T(java.lang.Integer).valueOf(estrellasTotales ?: 0)},
+        estrellasCompletas=${stars / 20},
+        estrellasRestantes=${20 - (stars % 20)}">
+
+                <div class="stars-count" th:text="${stars}"></div>
+                <div class="stars-visual">
+                    <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                        <i class="fas fa-star" th:classappend="${i <= estrellasCompletas} ? 'gold' : 'gray'"></i>
+                    </th:block>
+                </div>
+                <div class="stars-progress" th:if="${estrellasRestantes > 0 and estrellasRestantes < 20}">
+                    <span th:text="|Próxima recompensa en ${estrellasRestantes} estrellas|"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Juegos disponibles -->
+        <section class="games-grid">
+            <h3>Actividades Disponibles</h3>
+            <div th:each="actividad : ${actividadesDisponibles}" class="game-card"
+                th:classappend="${#lists.contains(actividadesCompletadas.![id], actividad.id)} ? 'completed' : ''">
+                <div class="game-icon" th:classappend="${actividad.tipo}">
+                    <i th:class="${actividad.tipo == 'respiracion'} ? 'fas fa-wind' : 
+                                ${actividad.tipo == 'relajacion'} ? 'fas fa-spa' : 'fas fa-music'"></i>
+                </div>
+                <h4 th:text="${actividad.nombre}"></h4>
+                <p class="activity-info">
+                    <span th:text="${actividad.duracionEstimada} + ' min'"></span>
+                    <span class="stars-reward" th:text="${actividad.estrellasRecompensa} + ' ★'"></span>
+                </p>
+                <button class="btn-play">Comenzar</button>
+                <div th:if="${#lists.contains(actividadesCompletadas.![id], actividad.id)}" class="game-completed">
+                    <i class="fas fa-check-circle"></i> Completado
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel de logros (versión mejorada) -->
+        <section class="achievements">
+            <div class="achievements-header">
+                <h3><i class="fas fa-trophy"></i> Logros</h3>
+                <div class="achievements-count"
+                    th:text="${logrosUsuario != null ? #lists.size(logrosUsuario) : 0} + '/15'"></div>
+            </div>
+            <div class="achievements-grid">
+                <!-- Logros desbloqueados con verificación de null -->
+                <div th:if="${logrosUsuario != null and not logrosUsuario.empty}" th:each="logro : ${logrosUsuario}"
+                    class="achievement unlocked">
+                    <div class="achievement-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="achievement-info">
+                        <h5 th:text="${logro.logro != null ? logro.logro.nombre : 'Logro no disponible'}"></h5>
+                        <p th:text="${logro.logro != null ? logro.logro.descripcion : 'Descripción no disponible'}"></p>
+                    </div>
+                </div>
+
+                <!-- Logros bloqueados con cálculo seguro -->
+                <div th:with="totalLogros=${logrosUsuario != null ? #lists.size(logrosUsuario) : 0}, logrosFaltantes=${15 - totalLogros}" th:if="${logrosFaltantes > 0}">
+                    <div th:each="i : ${#numbers.sequence(1, logrosFaltantes)}" class="achievement locked">
+                        <div class="achievement-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="achievement-info">
+                            <h5>Logro Bloqueado</h5>
+                            <p>Completa más actividades para desbloquear</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>

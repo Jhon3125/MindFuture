@@ -1,0 +1,330 @@
+/* ---- Variables de colores ---- */
+.gold { color: #FFD700; }
+.gray { color: #CCCCCC; }
+.active { background-color: #4299e1; color: white; }
+.completed { background-color: #f0fff4; }
+
+/* ---- Mindfulness Game Styles ---- */
+.game-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* Estilos mejorados para la sección de progreso */
+.progress-section {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.progress-info {
+    margin-bottom: 1.5rem;
+}
+
+.level-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.current-level {
+    color: #2d3748;
+}
+
+.next-level {
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.progress-container {
+    height: 20px;
+    background-color: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.badges {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 1.5rem;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    background-color: #edf2f7;
+    color: #4a5568;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge.active {
+    background-color: #4299e1;
+    color: white;
+}
+
+/* Estilos mejorados para las estrellas */
+.stars-section {
+    background-color: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stars-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.stars-tooltip {
+    color: #a0aec0;
+    cursor: help;
+}
+
+.stars-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.stars-count {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2d3748;
+}
+
+.stars-visual {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.stars-visual i {
+    color: #e2e8f0;
+    font-size: 1.2rem;
+}
+
+.stars-visual i.gold {
+    color: #f6e05e;
+}
+
+.stars-progress {
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+/* Estilos mejorados para las actividades */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.game-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.game-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.game-icon.respiracion {
+    background-color: #4299e1;
+}
+
+.game-icon.relajacion {
+    background-color: #9f7aea;
+}
+
+.game-icon.meditacion {
+    background-color: #f56565;
+}
+
+.game-icon i.animated {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.game-card h4 {
+    margin: 0.5rem 0;
+    color: #2d3748;
+}
+
+.activity-info {
+    display: flex;
+    justify-content: space-between;
+    color: #718096;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.stars-reward {
+    color: #f6e05e;
+    font-weight: bold;
+}
+
+.btn-play {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #48bb78;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-play:hover {
+    background-color: #38a169;
+}
+
+.game-completed {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #48bb78;
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* Estilos mejorados para logros */
+.achievements {
+    background-color: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.achievements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.achievements-count {
+    background-color: #edf2f7;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.achievement {
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.achievement.unlocked {
+    background-color: #ebf8ff;
+    border-left: 4px solid #3182ce;
+}
+
+.achievement.locked {
+    background-color: #f7fafc;
+    border-left: 4px solid #e2e8f0;
+    opacity: 0.7;
+}
+
+.achievement-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.achievement.unlocked .achievement-icon {
+    background-color: #bee3f8;
+    color: #3182ce;
+}
+
+.achievement.locked .achievement-icon {
+    background-color: #edf2f7;
+    color: #a0aec0;
+}
+
+.achievement-info h5 {
+    margin: 0;
+    color: #2d3748;
+}
+
+.achievement-info p {
+    margin: 0.3rem 0 0;
+    color: #718096;
+    font-size: 0.9rem;
+}

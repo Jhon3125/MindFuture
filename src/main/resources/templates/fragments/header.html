@@ -1,13 +1,40 @@
-<header class="main-header">
-    <div class="logo">
-        <img src="img/logo-claro.png" alt="Mind Future">
-    </div>
-    <nav class="main-nav">
-        <ul>
-            <li><a href="#vr-therapy">VR Therapy</a></li>
-            <li><a href="#mood-tracker">Mood Tracker</a></li>
-            <li><a href="#mindfulness-game">Mindfulness Game</a></li>
-            <li><a href="#login" class="btn-login">Iniciar Sesión</a></li>
-        </ul>
-    </nav>
-</header>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <a th:href="@{/}"><img src="/img/logo-claro.png" alt="Mind Future"></a>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a th:href="@{/mindfulness-game}">Mindfulness Game</a></li>
+                <li><a th:href="@{/vr-therapy}">VR Therapy</a></li>
+                <li><a th:href="@{/mood-tracker}">Mood Tracker</a></li>
+
+                <!-- Usuario autenticado -->
+                <li sec:authorize="isAuthenticated()">
+                    <span class="user-name" sec:authentication="name"></span>
+                </li>
+                <li class="auth-buttons" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" class="logout-form">
+                        <button type="submit" class="btn-auth btn-logout">Cerrar Sesión</button>
+                    </form>
+                </li>
+
+                <!-- Usuario no autenticado -->
+                <li class="auth-buttons" sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/auth/login}" class="btn-auth btn-login">Iniciar Sesión</a>
+                </li>
+                <li class="auth-buttons" sec:authorize="!isAuthenticated()">
+                    <a th:href="@{/auth/register}" class="btn-auth btn-register">Registrarse</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+</body>
+
+</html>
