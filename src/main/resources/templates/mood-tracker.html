@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Tracker | Mind Future</title>
+    <link rel="stylesheet" href="/static/css/mood-tracker.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/nav.css}">
+    <link rel="stylesheet" th:href="@{/css/mood-tracker.css}">
+</head>
+
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    <div class="moodtracker-container">
+        <!-- Header -->
+        <header class="mt-header">
+            <h1><i class="fas fa-brain"></i> Mood Tracker</h1>
+            <p class="subtitle">Analiza tu estado emocional con IA</p>
+        </header>
+
+        <!-- Selector de fecha -->
+        <div class="date-selector">
+            <button id="prev-day"><i class="fas fa-chevron-left"></i></button>
+            <h3 id="current-date">23 de Mayo, 2024</h3>
+            <button id="next-day"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <!-- Tarjeta de análisis actual -->
+        <div class="current-mood-card">
+            <div class="mood-visual">
+                <div class="mood-face" id="mood-face">
+                    <div class="eyes">
+                        <div class="eye left"></div>
+                        <div class="eye right"></div>
+                    </div>
+                    <div class="mouth"></div>
+                </div>
+                <div class="mood-score">
+                    <span id="mood-value">72</span>/100
+                </div>
+            </div>
+            <div class="mood-details">
+                <h3>Tu estado actual</h3>
+                <div class="mood-tags" id="mood-tags">
+                    <span class="tag calm">Calmado</span>
+                    <span class="tag focused">Enfocado</span>
+                </div>
+                <p class="mood-analysis" id="mood-analysis">
+                    Nuestro análisis indica que te encuentras en un estado emocional equilibrado.
+                    Tu nivel de estrés es bajo y tu frecuencia cardíaca se mantiene estable.
+                </p>
+            </div>
+        </div>
+
+        <!-- Formulario de registro -->
+        <div class="mood-form">
+            <h3><i class="fas fa-edit"></i> Registra tu estado</h3>
+            <div class="form-group">
+                <label>¿Cómo te sientes ahora?</label>
+                <div class="mood-selector">
+                    <input type="radio" name="mood" id="mood1" value="5">
+                    <label for="mood1" class="mood-option" data-tooltip="Excelente">
+                        <i class="fas fa-grin-stars"></i>
+                    </label>
+
+                    <input type="radio" name="mood" id="mood2" value="4">
+                    <label for="mood2" class="mood-option" data-tooltip="Bien">
+                        <i class="fas fa-smile"></i>
+                    </label>
+
+                    <input type="radio" name="mood" id="mood3" value="3">
+                    <label for="mood3" class="mood-option" data-tooltip="Normal">
+                        <i class="fas fa-meh"></i>
+                    </label>
+
+                    <input type="radio" name="mood" id="mood4" value="2">
+                    <label for="mood4" class="mood-option" data-tooltip="Mal">
+                        <i class="fas fa-frown"></i>
+                    </label>
+
+                    <input type="radio" name="mood" id="mood5" value="1">
+                    <label for="mood5" class="mood-option" data-tooltip="Pésimo">
+                        <i class="fas fa-sad-tear"></i>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="mood-text">Describe tu estado (opcional)</label>
+                <textarea id="mood-text"
+                    placeholder="Ej: Me siento un poco ansioso por el examen de mañana..."></textarea>
+                <button id="analyze-text" class="btn-ia">
+                    <i class="fas fa-robot"></i> Analizar con IA
+                </button>
+            </div>
+
+            <div class="form-group biometrics">
+                <label>Datos biométricos</label>
+                <div class="bio-row">
+                    <div class="bio-item">
+                        <i class="fas fa-heartbeat"></i>
+                        <span id="heart-rate">--</span> bpm
+                    </div>
+                    <div class="bio-item">
+                        <i class="fas fa-bed"></i>
+                        <span id="sleep-hours">--</span> hrs sueño
+                    </div>
+                    <div class="bio-item">
+                        <i class="fas fa-battery-three-quarters"></i>
+                        <span id="energy-level">--</span>/10
+                    </div>
+                </div>
+                <button id="sync-wearable" class="btn-wearable">
+                    <i class="fas fa-bluetooth-b"></i> Sincronizar wearable
+                </button>
+            </div>
+
+            <button id="save-mood" class="btn-save">
+                <i class="fas fa-save"></i> Guardar registro
+            </button>
+        </div>
+
+        <!-- Gráfico histórico -->
+        <div class="history-section">
+            <h3><i class="fas fa-chart-line"></i> Tu historial emocional</h3>
+            <div class="time-selector">
+                <button class="time-btn active">7 días</button>
+                <button class="time-btn">30 días</button>
+                <button class="time-btn">90 días</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="mood-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recomendaciones -->
+        <div class="recommendations-section">
+            <h3><i class="fas fa-lightbulb"></i> Recomendaciones para ti</h3>
+            <div class="recommendations-grid" id="recommendations">
+                <!-- Dinámicas desde la base de datos -->
+                <div class="recommendation-card">
+                    <i class="fas fa-spa"></i>
+                    <h4>Meditación guiada</h4>
+                    <p>Prueba nuestra sesión de 10 minutos para reducir el estrés</p>
+                </div>
+                <div class="recommendation-card">
+                    <i class="fas fa-music"></i>
+                    <h4>Sonidos relajantes</h4>
+                    <p>Escucha nuestra playlist "Océano de Calma"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/mood-tracker.js"></script>
+</body>
+
+</html>
