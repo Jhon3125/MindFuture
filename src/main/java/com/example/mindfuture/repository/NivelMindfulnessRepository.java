@@ -10,4 +10,6 @@ import com.example.mindfuture.model.NivelMindfulness;
 @Repository
 public interface NivelMindfulnessRepository extends JpaRepository<NivelMindfulness, Integer> {
     Optional<NivelMindfulness> findByOrden(Integer orden);
+
+    Optional<NivelMindfulness> findTopByOrderByOrdenDesc();
 }
