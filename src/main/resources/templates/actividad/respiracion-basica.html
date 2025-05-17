@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${actividad.nombre} + ' | Mind Future'">Actividad | Mind Future</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/nav.css}">
+    <link rel="stylesheet" th:href="@{/css/respiracion-basica.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="activity-container">
+        <h1 th:text="${actividad.nombre}">Respiración Básica</h1>
+        <p class="activity-description" th:text="${actividad.descripcion}">
+            Ejercicio de respiración guiada para reducir el estrés y mejorar la concentración.
+        </p>
+
+        <div class="activity-content" id="respirar-content">
+            <div class="breathing-circle" id="breathing-circle">
+                <span class="breathing-text" id="breathing-text">INHALA</span>
+            </div>
+            <div class="timer" id="time-left" th:text="${actividad.duracionEstimada} + ':00'">2:00</div>
+        </div>
+
+        <div class="activity-completed" id="activity-completed">
+            <h2>¡Actividad completada!</h2>
+            <p>Has ganado <span id="stars-earned" th:text="${actividad.estrellasRecompensa}">0</span> estrellas</p>
+            <button class="btn-return" onclick="window.location.href='/mindfulness-game'">Volver a los juegos</button>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const actividad = {
+                id: [[${ actividad.idActividad }]],
+                duracion: [[${ actividad.duracionEstimada }]],
+                estrellas: [[${ actividad.estrellasRecompensa }]]
+            };
+
+            const elements = {
+                circle: document.getElementById('breathing-circle'),
+                text: document.getElementById('breathing-text'),
+                timer: document.getElementById('time-left'),
+                completed: document.getElementById('activity-completed'),
+                stars: document.getElementById('stars-earned'),
+                container: document.querySelector('.activity-container'),
+                body: document.body
+            };
+
+            let activityTimer;
+            let remainingTime = actividad.duracion * 60; // Convertir a segundos
+            let breathInterval;
+            let breathState = 'inhale';
+
+            // Tiempos en milisegundos
+            const TIMINGS = {
+                inhale: 5000,    // 5 segundos para inhalar
+                hold: 7000,      // 7 segundos para retener
+                exhale: 8000     // 8 segundos para exhalar
+            };
+
+            updateTimerDisplay();
+            startBreathingActivity();
+
+            function startBreathingActivity() {
+                // Temporizador principal
+                activityTimer = setInterval(function () {
+                    remainingTime--;
+                    updateTimerDisplay();
+                    if (remainingTime <= 0) completeActivity();
+                }, 1000);
+
+                // Ciclo de respiración
+                runBreathCycle();
+            }
+
+            function runBreathCycle() {
+                if (remainingTime <= 0) return;
+
+                switch (breathState) {
+                    case 'inhale':
+                        setBreathState('INHALA', 'state-inhale', 'bg-inhale', TIMINGS.inhale);
+                        breathState = 'hold';
+                        break;
+
+                    case 'hold':
+                        setBreathState('RETIENE', 'state-hold', 'bg-hold', TIMINGS.hold);
+                        breathState = 'exhale';
+                        break;
+
+                    case 'exhale':
+                        setBreathState('EXHALA', 'state-exhale', 'bg-exhale', TIMINGS.exhale);
+                        breathState = 'inhale';
+                        break;
+                }
+            }
+
+            function setBreathState(text, circleClass, bgClass, duration) {
+                elements.text.textContent = text;
+                elements.circle.className = `breathing-circle ${circleClass} active`;
+                elements.body.className = bgClass;
+
+                // Usar setTimeout para mayor precisión
+                breathInterval = setTimeout(runBreathCycle, duration);
+            }
+
+            function updateTimerDisplay() {
+                const minutes = Math.floor(remainingTime / 60);
+                const seconds = remainingTime % 60;
+                elements.timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (remainingTime <= 10) {
+                    elements.timer.style.animation = 'pulseGold 0.5s infinite alternate';
+                    elements.timer.style.color = '#ff5252';
+                }
+            }
+
+            function mostrarLogrosDesbloqueados(logros) {
+                // Crear elemento para mostrar logros
+                const logrosContainer = document.createElement('div');
+                logrosContainer.className = 'logros-desbloqueados';
+                logrosContainer.innerHTML = `
+                <h3>¡Nuevos Logros Desbloqueados!</h3>
+                <div class="logros-lista">
+                    ${logros.map(logro => `
+                        <div class="logro-item">
+                            <img src="${logro.imagenUrl}" alt="${logro.nombre}">
+                            <h4>${logro.nombre}</h4>
+                            <p>${logro.descripcion}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+                // Añadir al contenedor de actividad completada
+                elements.completed.appendChild(logrosContainer);
+            }
+
+            function mostrarError(mensaje) {
+                const errorElement = document.createElement('div');
+                errorElement.className = 'error-actividad';
+                errorElement.textContent = mensaje;
+                elements.completed.appendChild(errorElement);
+            }
+        });
+    </script>
+</body>
+
+</html>

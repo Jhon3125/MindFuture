@@ -7,8 +7,7 @@
     <title>Mindfulness Game Journey | Mind Future</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/games.css}">
-    <link rel="stylesheet" th:href="@{/css/modal-games.css}">
+    <link rel="stylesheet" th:href="@{/css/mindfulness.css}">
     <link rel="stylesheet" th:href="@{/css/nav.css}">
 </head>
 
@@ -67,38 +66,6 @@
             </div>
         </section>
 
-        <!-- Modal para la actividad de respiración -->
-        <div id="activityModal" class="modal-activity">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h2 id="modal-activity-title">Respiración Básica</h2>
-
-                <div class="activity-content" id="activity-content">
-                    <div class="breathing-container">
-                        <div class="breathing-circle" id="breathing-circle">
-                            <span id="breathing-text">INHALA</span>
-                        </div>
-                        <div class="breathing-instructions">
-                            <p>Sigue el círculo para completar la respiración</p>
-                            <p>Tiempo restante: <span id="time-left">2:00</span></p>
-                            <div class="progress-container">
-                                <div class="progress-bar" id="breathing-progress"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="activity-completed" id="activity-completed" style="display: none;">
-                    <div class="completion-animation">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3>¡Actividad completada!</h3>
-                    <p>Has ganado <span id="stars-earned">1</span> <i class="fas fa-star gold"></i></p>
-                    <button id="close-activity" class="btn-primary">Finalizar</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Juegos disponibles -->
         <section class="games-grid">
             <h3>Actividades Disponibles</h3>
@@ -120,7 +87,8 @@
 
                 <button class="btn-play" th:data-activity-id="${actividad.idActividad}"
                     th:data-activity-type="${actividad.tipo?.name()}" th:data-duration="${actividad.duracionEstimada}"
-                    th:data-stars="${actividad.estrellasRecompensa}" th:data-activity-name="${actividad.nombre}">
+                    th:data-stars="${actividad.estrellasRecompensa}" th:data-activity-name="${actividad.nombre}"
+                    th:disabled="${actividadesCompletadasIds != null and #lists.contains(actividadesCompletadasIds, actividad.idActividad)}">
                     Comenzar
                 </button>
 
@@ -185,215 +153,18 @@
     <script th:inline="javascript">
         document.querySelectorAll('.btn-play').forEach(button => {
             button.addEventListener('click', function () {
+                // Verificar si el botón está deshabilitado
+                if (this.disabled) {
+                    return; // No hacer nada si está deshabilitado
+                }
+
                 const activityId = this.getAttribute('data-activity-id');
                 if (activityId) {
-                    console.log('Iniciando actividad con ID:', activityId);
-                    // window.location.href = '/actividad/' + activityId;
+                    window.location.href = '/mindfulness/actividad/' + activityId;
                 } else {
                     console.error('No se pudo obtener el ID de la actividad');
                 }
             });
-        });
-    </script>
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function () {
-            // Elementos del modal
-            const modal = document.getElementById('activityModal');
-            const closeBtn = document.querySelector('.close-modal');
-            const closeActivityBtn = document.getElementById('close-activity');
-            const playButtons = document.querySelectorAll('.btn-play');
-
-            // Elementos de la actividad
-            const activityContent = document.getElementById('activity-content');
-            const activityCompleted = document.getElementById('activity-completed');
-            const modalTitle = document.getElementById('modal-activity-title');
-            const breathingCircle = document.getElementById('breathing-circle');
-            const breathingText = document.getElementById('breathing-text');
-            const timeLeft = document.getElementById('time-left');
-            const starsEarned = document.getElementById('stars-earned');
-            const progressBar = document.getElementById('breathing-progress');
-
-            // Variables de estado
-            let activityTimer;
-            let breathingInterval;
-            let remainingTime;
-            let currentActivity = null;
-
-            // Manejadores de eventos
-            playButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const activityType = this.getAttribute('data-activity-type');
-                    const duration = parseInt(this.getAttribute('data-duration'));
-                    const stars = parseInt(this.getAttribute('data-stars'));
-                    const activityId = this.getAttribute('data-activity-id');
-                    const activityName = this.getAttribute('data-activity-name');
-
-                    currentActivity = {
-                        id: activityId,
-                        type: activityType,
-                        duration: duration,
-                        stars: stars,
-                        name: activityName
-                    };
-
-                    // Configurar modal
-                    modalTitle.textContent = activityName;
-                    remainingTime = duration * 60; // Convertir a segundos
-                    starsEarned.textContent = stars;
-
-                    // Resetear estado
-                    activityContent.style.display = 'block';
-                    activityCompleted.style.display = 'none';
-                    progressBar.style.width = '100%';
-
-                    // Mostrar modal
-                    modal.style.display = 'block';
-
-                    // Iniciar actividad
-                    startBreathingActivity();
-                });
-            });
-
-            // Cerrar modal solo con el botón de cerrar
-            closeBtn.addEventListener('click', closeModal);
-            closeActivityBtn.addEventListener('click', closeModal);
-
-            // Eliminado el event listener que cerraba al hacer clic fuera
-
-            function startBreathingActivity() {
-                updateTimerDisplay();
-
-                // Iniciar temporizador
-                activityTimer = setInterval(function () {
-                    remainingTime--;
-                    updateTimerDisplay();
-
-                    // Actualizar barra de progreso
-                    const totalTime = currentActivity.duration * 60;
-                    const progressPercentage = (remainingTime / totalTime) * 100;
-                    progressBar.style.width = `${progressPercentage}%`;
-
-                    if (remainingTime <= 0) {
-                        completeActivity();
-                    }
-                }, 1000);
-
-                // Animación de respiración
-                let breathState = 'inhale';
-                breathingText.textContent = 'INHALA';
-                breathingCircle.style.backgroundColor = '#3a7bd5';
-
-                breathingInterval = setInterval(function () {
-                    if (breathState === 'inhale') {
-                        breathState = 'hold';
-                        breathingText.textContent = 'RETIENE';
-                        breathingCircle.style.backgroundColor = '#00d2ff';
-                        breathingCircle.style.transform = 'scale(1.2)';
-                    } else if (breathState === 'hold') {
-                        breathState = 'exhale';
-                        breathingText.textContent = 'EXHALA';
-                        breathingCircle.style.backgroundColor = '#ff416c';
-                        breathingCircle.style.transform = 'scale(1)';
-                    } else {
-                        breathState = 'inhale';
-                        breathingText.textContent = 'INHALA';
-                        breathingCircle.style.backgroundColor = '#3a7bd5';
-                        breathingCircle.style.transform = 'scale(0.8)';
-                    }
-                }, 4000);
-            }
-
-            function updateTimerDisplay() {
-                const minutes = Math.floor(remainingTime / 60);
-                const seconds = remainingTime % 60;
-                timeLeft.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            }
-
-            function completeActivity() {
-                clearInterval(activityTimer);
-                clearInterval(breathingInterval);
-
-                activityContent.style.display = 'none';
-                activityCompleted.style.display = 'block';
-
-                // Mostrar animación de estrellas ganadas
-                animateStarsEarned(currentActivity.stars);
-
-                // Mostrar loader mientras se procesa
-                const loader = document.createElement('div');
-                loader.className = 'loader';
-                activityCompleted.appendChild(loader);
-
-                fetch('/completar-actividad', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').content
-                    },
-                    body: JSON.stringify({
-                        actividadId: currentActivity.id,
-                        estrellas: currentActivity.stars
-                    })
-                })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Error en el servidor');
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Remover loader
-                        activityCompleted.removeChild(loader);
-
-                        if (data.success) {
-                            // Mostrar logros desbloqueados
-                            if (data.nuevosLogros && data.nuevosLogros.length > 0) {
-                                showNewAchievements(data.nuevosLogros);
-                            }
-
-                            // Mostrar mensaje de nivel completado
-                            if (data.nivelCompletado) {
-                                showLevelUpMessage();
-                            }
-
-                            // Recargar después de 4 segundos
-                            setTimeout(() => location.reload(), 4000);
-                        } else {
-                            alert(data.message || 'Error al guardar progreso');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        activityCompleted.removeChild(loader);
-                        alert('Error al conectar con el servidor');
-                    });
-            }
-
-            function showNewAchievements(achievements) {
-                const completionDiv = document.getElementById('activity-completed');
-                const achievementsMessage = document.createElement('div');
-                achievementsMessage.className = 'achievements-message';
-
-                let html = '<div class="confetti"></div><h3>¡Nuevos Logros Desbloqueados!</h3><ul>';
-                achievements.forEach(achievement => {
-                    html += `<li>${achievement}</li>`;
-                });
-                html += '</ul>';
-
-                achievementsMessage.innerHTML = html;
-                completionDiv.appendChild(achievementsMessage);
-            }
-
-            function closeModal() {
-                modal.style.display = 'none';
-                clearInterval(activityTimer);
-                clearInterval(breathingInterval);
-                breathingCircle.style.transform = 'scale(1)';
-                breathingCircle.style.backgroundColor = '#3a7bd5';
-                breathingText.textContent = 'INHALA';
-
-                // Resetear el contenido para la próxima apertura
-                activityContent.style.display = 'block';
-                activityCompleted.style.display = 'none';
-            }
         });
     </script>
 </body>

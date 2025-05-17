@@ -16,7 +16,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Deshabilitar CSRF para simplificar
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**").permitAll()
                         .requestMatchers("/vr-therapy", "/mood-tracker", "/mindfulness-game").authenticated()

@@ -1,6 +1,7 @@
 package com.example.mindfuture.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,8 @@ public interface UsuarioLogrosRepository extends JpaRepository<UsuarioLogro, Int
 
     // Encuentra todos los logros de un usuario
     List<UsuarioLogro> findByUsuario(Usuario usuario);
+
+    long countByUsuario(Usuario usuario);
+
+    Optional<UsuarioLogro> findByUsuarioAndLogro(Usuario usuario, Logro logro);
 }
