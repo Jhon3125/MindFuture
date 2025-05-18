@@ -81,9 +81,6 @@ public class Usuario {
     private Set<UsuarioLogro> logros = new HashSet<>();
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<UsuarioSesionesDiarias> sesionesDiarias = new HashSet<>();
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Recomendacion> recomendaciones = new HashSet<>();
 
     public enum Genero {
