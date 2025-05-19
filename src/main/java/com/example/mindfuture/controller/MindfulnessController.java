@@ -2,13 +2,17 @@ package com.example.mindfuture.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,6 +47,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/mindfulness")
 public class MindfulnessController {
 
+    private static final Logger log = LoggerFactory.getLogger(MindfulnessController.class);
+
     private final MindfulnessActividadRepository actividadRepository;
     private final UsuarioProgresoRepository progresoRepository;
     private final ActividadUsuarioRepository actividadUsuarioRepository;
@@ -72,25 +78,49 @@ public class MindfulnessController {
         try {
             Usuario usuario = userDetails.getUsuario();
 
-            // Obtener progreso del usuario
+            // Obtener o crear progreso del usuario
             UsuarioProgreso progreso = progresoRepository.findByUsuario(usuario)
-                    .orElseThrow(() -> new RuntimeException("Progreso no encontrado"));
+                    .orElseGet(() -> {
+                        NivelMindfulness nivelInicial = nivelRepository.findByOrden(1)
+                                .orElseThrow(() -> new RuntimeException("No se encontró el nivel inicial"));
+                        UsuarioProgreso nuevoProgreso = new UsuarioProgreso();
+                        nuevoProgreso.setUsuario(usuario);
+                        nuevoProgreso.setNivel(nivelInicial);
+                        return progresoRepository.save(nuevoProgreso);
+                    });
 
-            // Obtener nivel actual y siguiente
+            // Verificar y actualizar el nivel según las estrellas acumuladas
             NivelMindfulness nivelActual = progreso.getNivel();
-            NivelMindfulness proximoNivel = nivelRepository.findByOrden(nivelActual.getOrden() + 1)
+            NivelMindfulness nuevoNivel = nivelRepository
+                    .findByEstrellasRequeridasLessThanEqual(progreso.getEstrellasAcumuladas())
+                    .stream()
+                    .filter(n -> n.getOrden() > nivelActual.getOrden())
+                    .max(Comparator.comparingInt(NivelMindfulness::getOrden))
+                    .orElse(null);
+
+            if (nuevoNivel != null) {
+                progreso.setNivel(nuevoNivel);
+                progreso.setCompletado(true);
+                progreso.setFechaCompletado(new Date());
+                progreso = progresoRepository.save(progreso);
+                model.addAttribute("nuevoNivelDesbloqueado", true);
+            }
+
+            // Obtener nivel siguiente
+            NivelMindfulness proximoNivel = nivelRepository.findByOrden(progreso.getNivel().getOrden() + 1)
                     .orElse(null);
 
             // Calcular porcentaje completado
-            double porcentajeCompletado = calcularPorcentajeCompletado(progreso, nivelActual, proximoNivel);
+            double porcentajeCompletado = calcularPorcentajeCompletado(progreso, progreso.getNivel(), proximoNivel);
 
-            // Obtener actividades disponibles (filtradas para evitar nulls)
-            List<MindfulnessActividad> actividadesDisponibles = actividadRepository.findByNivel(nivelActual)
+            // Obtener actividades del nivel actual
+            List<MindfulnessActividad> actividadesDisponibles = actividadRepository.findByNivel(progreso.getNivel())
                     .stream()
-                    .filter(a -> a != null)
+                    .filter(Objects::nonNull)
+                    .filter(a -> a.getNivel() != null)
                     .collect(Collectors.toList());
 
-            // Obtener IDs de actividades completadas (manejo seguro)
+            // Obtener IDs de actividades completadas
             List<Integer> actividadesCompletadasIds = actividadUsuarioRepository
                     .findByUsuarioAndCompletado(usuario, true)
                     .stream()
@@ -98,14 +128,14 @@ public class MindfulnessController {
                     .map(au -> au.getActividad().getIdActividad())
                     .collect(Collectors.toList());
 
-            // Obtener logros del usuario (manejo seguro)
+            // Obtener logros del usuario
             List<UsuarioLogro> logrosUsuario = usuarioLogrosRepository.findByUsuario(usuario)
                     .stream()
-                    .filter(ul -> ul != null)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
             // Agregar atributos al modelo
-            model.addAttribute("nivelActual", nivelActual.getNombre());
+            model.addAttribute("nivelActual", progreso.getNivel().getNombre());
             model.addAttribute("proximoNivel",
                     proximoNivel != null ? proximoNivel.getNombre() : "¡Máximo nivel alcanzado!");
             model.addAttribute("porcentajeCompletado", porcentajeCompletado);
@@ -113,10 +143,11 @@ public class MindfulnessController {
             model.addAttribute("actividadesDisponibles", actividadesDisponibles);
             model.addAttribute("actividadesCompletadasIds", actividadesCompletadasIds);
             model.addAttribute("logrosUsuario", logrosUsuario);
+            model.addAttribute("progreso", progreso);
 
-        } catch (Exception e) {
-            // Manejo básico de errores
-            model.addAttribute("error", "Ocurrió un error al cargar los datos");
+        } catch (RuntimeException e) {
+            log.error("Error al cargar la página de mindfulness game", e);
+            model.addAttribute("error", "Ocurrió un error al cargar los datos: " + e.getMessage());
             model.addAttribute("actividadesDisponibles", Collections.emptyList());
             model.addAttribute("actividadesCompletadasIds", Collections.emptyList());
             model.addAttribute("logrosUsuario", Collections.emptyList());
