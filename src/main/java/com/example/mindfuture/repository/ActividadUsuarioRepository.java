@@ -1,6 +1,7 @@
 package com.example.mindfuture.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,24 +31,5 @@ public interface ActividadUsuarioRepository extends JpaRepository<ActividadUsuar
         long countByUsuarioAndActividadTipo(@Param("usuario") Usuario usuario,
                         @Param("tipo") MindfulnessActividad.TipoActividad tipo);
 
-        boolean existsByUsuarioAndActividadIdActividad(Usuario usuario, Integer idActividad);
-
-        boolean existsByUsuarioAndActividadTipo(Usuario usuario, MindfulnessActividad.TipoActividad tipo);
-
-        @Query("SELECT COUNT(a) FROM ActividadUsuario a WHERE a.usuario = :usuario AND a.actividad.tipo = :tipo AND a.completado = :completado")
-        long countByUsuarioAndActividadTipoAndCompletado(
-                        @Param("usuario") Usuario usuario,
-                        @Param("tipo") MindfulnessActividad.TipoActividad tipo,
-                        @Param("completado") boolean completado);
-
-        // Método alternativo más simple (si solo necesitas contar completadas)
-        long countByUsuarioAndActividadTipoAndCompletadoTrue(
-                        Usuario usuario,
-                        MindfulnessActividad.TipoActividad tipo);
-
-        boolean existsByUsuarioAndActividadTipoAndCompletado(Usuario usuario,
-                        MindfulnessActividad.TipoActividad tipo, boolean completado);
-
-        boolean existsByUsuarioAndActividadAndCompletado(Usuario usuario, MindfulnessActividad actividad,
-                        Boolean completado);
+        Optional<ActividadUsuario> findByUsuarioAndActividad(Usuario usuario, MindfulnessActividad actividad);
 }
