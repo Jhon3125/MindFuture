@@ -27,10 +27,22 @@
             <div class="timer" id="time-left" th:text="${actividad.duracionEstimada} + ':00'">2:00</div>
         </div>
 
+        <!-- Formulario oculto para completar actividad -->
+        <form id="completeActivityForm" method="post" action="/mindfulness/completar-actividad"
+            th:object="${actividad}">
+            <input type="hidden" name="idActividad" th:value="${actividad.idActividad}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        </form>
+
         <div class="activity-completed" id="activity-completed">
             <h2>¡Actividad completada!</h2>
             <p>Has ganado <span id="stars-earned" th:text="${actividad.estrellasRecompensa}">0</span> estrellas</p>
-            <button class="btn-return" onclick="window.location.href='/mindfulness-game'">Volver a los juegos</button>
+
+            <!-- Cambiado a event listener en lugar de onclick -->
+            <button type="button" class="btn-return" id="submitActivityBtn">Volver a los juegos</button>
+
+            <!-- Contenedor para logros desbloqueados -->
+            <div id="achievements-container"></div>
         </div>
     </main>
 
@@ -51,33 +63,71 @@
                 completed: document.getElementById('activity-completed'),
                 stars: document.getElementById('stars-earned'),
                 container: document.querySelector('.activity-container'),
-                body: document.body
+                body: document.body,
+                form: document.getElementById('completeActivityForm'),
+                achievementsContainer: document.getElementById('achievements-container'),
+                submitBtn: document.getElementById('submitActivityBtn')
             };
 
             let activityTimer;
-            let remainingTime = actividad.duracion * 60; // Convertir a segundos
+            let remainingTime = actividad.duracion * 60;
             let breathInterval;
             let breathState = 'inhale';
 
-            // Tiempos en milisegundos
             const TIMINGS = {
-                inhale: 5000,    // 5 segundos para inhalar
-                hold: 7000,      // 7 segundos para retener
-                exhale: 8000     // 8 segundos para exhalar
+                inhale: 5000,
+                hold: 7000,
+                exhale: 8000
             };
 
-            updateTimerDisplay();
-            startBreathingActivity();
+            // Event listener para el botón de enviar
+            elements.submitBtn.addEventListener('click', function () {
+                submitActivityForm();
+            });
+
+            // Mover la función al ámbito del DOMContentLoaded
+            function submitActivityForm() {
+                // Crear un iframe oculto para manejar la respuesta
+                const iframe = document.createElement('iframe');
+                iframe.name = 'form-response';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+
+                // Configurar el formulario para enviar al iframe
+                elements.form.target = 'form-response';
+                elements.form.submit();
+
+                // Manejar la respuesta después de enviar el formulario
+                iframe.onload = function () {
+                    try {
+                        const response = JSON.parse(iframe.contentDocument.body.textContent);
+                        if (response.success) {
+                            elements.stars.textContent = response.estrellasGanadas;
+                            if (response.logrosDesbloqueados && response.logrosDesbloqueados.length > 0) {
+                                mostrarLogrosDesbloqueados(response.logrosDesbloqueados);
+                            }
+                            // Redirigir después de mostrar los logros
+                            setTimeout(() => {
+                                window.location.href = '/mindfulness/mindfulness-game';
+                            }, 3000);
+                        } else {
+                            mostrarError(response.error || 'Error al completar la actividad');
+                        }
+                    } catch (e) {
+                        console.error('Error parsing response:', e);
+                        window.location.href = '/mindfulness/mindfulness-game';
+                    }
+                    document.body.removeChild(iframe);
+                };
+            }
 
             function startBreathingActivity() {
-                // Temporizador principal
                 activityTimer = setInterval(function () {
                     remainingTime--;
                     updateTimerDisplay();
                     if (remainingTime <= 0) completeActivity();
                 }, 1000);
 
-                // Ciclo de respiración
                 runBreathCycle();
             }
 
@@ -89,12 +139,10 @@
                         setBreathState('INHALA', 'state-inhale', 'bg-inhale', TIMINGS.inhale);
                         breathState = 'hold';
                         break;
-
                     case 'hold':
                         setBreathState('RETIENE', 'state-hold', 'bg-hold', TIMINGS.hold);
                         breathState = 'exhale';
                         break;
-
                     case 'exhale':
                         setBreathState('EXHALA', 'state-exhale', 'bg-exhale', TIMINGS.exhale);
                         breathState = 'inhale';
@@ -106,8 +154,6 @@
                 elements.text.textContent = text;
                 elements.circle.className = `breathing-circle ${circleClass} active`;
                 elements.body.className = bgClass;
-
-                // Usar setTimeout para mayor precisión
                 breathInterval = setTimeout(runBreathCycle, duration);
             }
 
@@ -122,33 +168,81 @@
                 }
             }
 
+            function completeActivity() {
+                clearInterval(activityTimer);
+                clearTimeout(breathInterval);
+                elements.container.classList.add('activity-finished');
+                elements.completed.style.display = 'block';
+
+                // Mostrar animación de estrellas
+                animateStars(actividad.estrellas);
+            }
+
+            function animateStars(count) {
+                const starsContainer = document.createElement('div');
+                starsContainer.className = 'stars-animation-container';
+
+                for (let i = 0; i < count; i++) {
+                    const star = document.createElement('i');
+                    star.className = 'fas fa-star';
+                    star.style.setProperty('--delay', `${i * 0.2}s`);
+                    star.style.setProperty('--position', `${Math.random() * 100}%`);
+                    starsContainer.appendChild(star);
+                }
+
+                elements.completed.prepend(starsContainer);
+                setTimeout(() => starsContainer.remove(), 3000);
+            }
+
             function mostrarLogrosDesbloqueados(logros) {
-                // Crear elemento para mostrar logros
                 const logrosContainer = document.createElement('div');
                 logrosContainer.className = 'logros-desbloqueados';
-                logrosContainer.innerHTML = `
-                <h3>¡Nuevos Logros Desbloqueados!</h3>
-                <div class="logros-lista">
-                    ${logros.map(logro => `
-                        <div class="logro-item">
-                            <img src="${logro.imagenUrl}" alt="${logro.nombre}">
-                            <h4>${logro.nombre}</h4>
-                            <p>${logro.descripcion}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
 
-                // Añadir al contenedor de actividad completada
-                elements.completed.appendChild(logrosContainer);
+                const title = document.createElement('h3');
+                title.textContent = '¡Nuevos Logros Desbloqueados!';
+                logrosContainer.appendChild(title);
+
+                const logrosList = document.createElement('div');
+                logrosList.className = 'logros-lista';
+
+                logros.forEach((logro, index) => {
+                    const logroItem = document.createElement('div');
+                    logroItem.className = 'logro-item';
+                    logroItem.style.setProperty('--index', index);
+
+                    const img = document.createElement('img');
+                    img.src = logro.imagenUrl;
+                    img.alt = logro.nombre;
+
+                    const h4 = document.createElement('h4');
+                    h4.textContent = logro.nombre;
+
+                    const p = document.createElement('p');
+                    p.textContent = logro.descripcion;
+
+                    logroItem.appendChild(img);
+                    logroItem.appendChild(h4);
+                    logroItem.appendChild(p);
+                    logrosList.appendChild(logroItem);
+                });
+
+                logrosContainer.appendChild(logrosList);
+                elements.achievementsContainer.appendChild(logrosContainer);
             }
 
             function mostrarError(mensaje) {
                 const errorElement = document.createElement('div');
                 errorElement.className = 'error-actividad';
-                errorElement.textContent = mensaje;
+                errorElement.innerHTML = `
+                    <p>${mensaje}</p>
+                    <button onclick="window.location.href='/mindfulness/mindfulness-game'">Volver a los juegos</button>
+                `;
                 elements.completed.appendChild(errorElement);
             }
+
+            // Iniciar la actividad
+            updateTimerDisplay();
+            startBreathingActivity();
         });
     </script>
 </body>
