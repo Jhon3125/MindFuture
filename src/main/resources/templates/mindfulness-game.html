@@ -20,6 +20,10 @@
             <p th:text="${error}"></p>
         </div>
 
+        <div th:if="${nuevoNivelDesbloqueado != null and nuevoNivelDesbloqueado}" class="alert alert-success">
+            ¡Felicidades! Has alcanzado el nivel <span th:text="${nivelActual}"></span>
+        </div>
+
         <!-- Sección de progreso -->
         <section class="progress-section">
             <h2>Tu Viaje Mindfulness</h2>
@@ -48,7 +52,7 @@
             </div>
         </section>
 
-        <!-- Sección de estrellas -->
+        <!-- Sección de estrellas mejorada -->
         <section class="stars-section">
             <div class="stars-header">
                 <h3><i class="fas fa-star"></i> Tus Puntos</h3>
@@ -69,13 +73,19 @@
         <!-- Juegos disponibles -->
         <section class="games-grid">
             <h3>Actividades Disponibles</h3>
-            <div th:each="actividad : ${actividadesDisponibles}" th:if="${actividad != null}" class="game-card"
+
+            <div th:if="${progreso?.nivel == null}" class="alert alert-warning">
+                No se pudo determinar tu nivel actual. Por favor contacta al soporte.
+            </div>
+
+            <div th:each="actividad : ${actividadesDisponibles}"
+                th:if="${actividad != null and actividad.nivel != null and (progreso?.nivel?.id == actividad.nivel.id)}"
+                class="game-card"
                 th:classappend="${actividadesCompletadasIds != null and #lists.contains(actividadesCompletadasIds, actividad.idActividad)} ? 'completed' : ''">
 
                 <div class="game-icon" th:classappend="${actividad.tipo?.name()?.toLowerCase()}">
-                    <i
-                        th:class="${'fas ' + (actividad.tipo?.name()?.toLowerCase() == 'respiracion' ? 'fa-wind' : 
-                                     actividad.tipo?.name()?.toLowerCase() == 'relajacion' ? 'fa-spa' : 'fa-music')}"></i>
+                    <i th:class="${'fas ' + (actividad.tipo?.name()?.toLowerCase() == 'respiracion' ? 'fa-wind' : 
+                                  actividad.tipo?.name()?.toLowerCase() == 'relajacion' ? 'fa-spa' : 'fa-music')}"></i>
                 </div>
 
                 <h4 th:text="${actividad.nombre} ?: 'Actividad sin nombre'"></h4>
@@ -86,10 +96,15 @@
                 </p>
 
                 <button class="btn-play" th:data-activity-id="${actividad.idActividad}"
-                    th:data-activity-type="${actividad.tipo?.name()}" th:data-duration="${actividad.duracionEstimada}"
-                    th:data-stars="${actividad.estrellasRecompensa}" th:data-activity-name="${actividad.nombre}"
                     th:disabled="${actividadesCompletadasIds != null and #lists.contains(actividadesCompletadasIds, actividad.idActividad)}">
-                    Comenzar
+                    <span
+                        th:if="${actividadesCompletadasIds != null and #lists.contains(actividadesCompletadasIds, actividad.idActividad)}">
+                        Completado
+                    </span>
+                    <span
+                        th:unless="${actividadesCompletadasIds != null and #lists.contains(actividadesCompletadasIds, actividad.idActividad)}">
+                        Comenzar
+                    </span>
                 </button>
 
                 <div th:if="${actividadesCompletadasIds != null and #lists.contains(actividadesCompletadasIds, actividad.idActividad)}"
@@ -99,7 +114,7 @@
             </div>
 
             <div th:if="${actividadesDisponibles == null or actividadesDisponibles.empty}" class="no-activities">
-                <p>No hay actividades disponibles en este momento.</p>
+                <p>No hay actividades disponibles en tu nivel actual.</p>
             </div>
         </section>
 
