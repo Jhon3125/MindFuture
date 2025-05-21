@@ -1,11 +1,122 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title th:text="${actividad.nombre} + ' | Mind Future'">Relajación Guiada | Mind Future</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/nav.css}">
+    <link rel="stylesheet" th:href="@{/css/relajacion-guiada.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="activity-container">
+        <h1 th:text="${actividad.nombre}">Relajación Guiada</h1>
+        <p class="activity-description" th:text="${actividad.descripcion}">
+            Ejercicio de relajación progresiva para liberar tensión y alcanzar un estado de calma.
+        </p>
+
+        <!-- Controles de audio -->
+        <div class="audio-controls">
+            <button id="play-pause-btn" aria-label="Reproducir/Pausar">
+                <i class="fas fa-play"></i>
+            </button>
+            <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.1" value="0.5">
+            <button id="mute-btn" aria-label="Silenciar">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <button id="tts-toggle" aria-label="Activar/Desactivar voz">
+                <i class="fas fa-volume-up"></i> Voz
+            </button>
+        </div>
+
+        <div class="activity-content" id="relaxation-content">
+            <div class="relaxation-body" id="relaxation-body">
+                <div class="body-part head" id="head">Cabeza</div>
+                <div class="body-part shoulders" id="shoulders">Hombros</div>
+                <div class="body-part arms1" id="arms1">Brazos</div>
+                <div class="body-part arms2" id="arms2">Brazos</div>
+                <div class="body-part hands1" id="hands1">Manos</div>
+                <div class="body-part hands2" id="hands2">Manos</div>
+                <div class="body-part chest" id="chest">Pecho</div>
+                <div class="body-part legs" id="legs">Piernas</div>
+                <div class="body-part feet" id="feet">Pies</div>
+            </div>
+            <div class="instructions" id="instructions">
+                <p id="current-instruction">Preparados para comenzar...</p>
+            </div>
+            <div class="timer" id="time-left" th:text="${actividad.duracionEstimada} + ':00'">5:00</div>
+        </div>
+
+        <!-- Formulario oculto para completar actividad -->
+        <form id="completeActivityForm" method="post" action="/mindfulness/completar-actividad"
+            th:object="${actividad}">
+            <input type="hidden" name="idActividad" th:value="${actividad.idActividad}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        </form>
+
+        <div class="activity-completed" id="activity-completed">
+            <div class="completion-animation">
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+            </div>
+
+            <h2 class="completion-title">¡Excelente trabajo!</h2>
+            <p class="completion-subtitle">Has completado la sesión de relajación</p>
+
+            <div class="stars-container">
+                <div class="stars-earned">
+                    <span id="stars-count" th:text="${actividad.estrellasRecompensa}">3</span>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="stars-message">Estrellas ganadas</p>
+            </div>
+
+            <div class="completion-benefits">
+                <p><i class="fas fa-check-circle"></i> Reducción del estrés</p>
+                <p><i class="fas fa-check-circle"></i> Mejor concentración</p>
+                <p><i class="fas fa-check-circle"></i> Sueño más reparador</p>
+            </div>
+
+            <button type="button" class="button-return pulse-animation" id="submitActivityBtn">
+                <i class="fas fa-gamepad"></i> Volver a los juegos
+            </button>
+        </div>
+
+        <!-- Elemento de audio -->
+        <audio id="background-audio" loop>
+            <source th:src="@{/audio/relajacion.mp3}" type="audio/mpeg">
+            <source th:src="@{/audio/relajacion.ogg}" type="audio/ogg">
+            Tu navegador no soporta el elemento de audio.
+        </audio>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const actividadData = {
+                idActividad: [[${ actividad.idActividad }]],
+                duracionEstimada: [[${ actividad.duracionEstimada }]],
+                estrellasRecompensa: [[${ actividad.estrellasRecompensa }]]
+            };
+            initRelaxationActivity(actividadData);
+        });
+    </script>
+    <script th:src="@{/js/relajacion-guiada.js}"></script>
 </body>
+
 </html>
