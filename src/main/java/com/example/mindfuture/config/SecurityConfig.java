@@ -20,7 +20,7 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**").permitAll()
-                        .requestMatchers("/vr-therapy", "/mood-tracker", "/mindfulness-game").authenticated()
+                        .requestMatchers("/vr-therapy", "/mood-tracker", "/mindfulness-game", "/chat").authenticated()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")

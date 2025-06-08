@@ -334,3 +334,5 @@ function loadRecommendations() {
         container.appendChild(card);
     });
 }
+
+
