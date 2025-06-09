@@ -16,20 +16,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**").permitAll()
-                        .requestMatchers("/vr-therapy", "/mood-tracker", "/mindfulness-game", "/chat").authenticated()
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/auth/login")
-                        .defaultSuccessUrl("/", true)
-                        .failureUrl("/auth/login?error=true")
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/?logout")
-                        .permitAll());
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**", "/chat").permitAll()
+                .requestMatchers("/vr-therapy", "/mood-tracker", "/mindfulness-game").authenticated()
+                .anyRequest().authenticated())
+            .formLogin(form -> form
+                .loginPage("/auth/login")
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/auth/login?error=true")
+                .permitAll())
+            .logout(logout -> logout
+                .logoutSuccessUrl("/?logout")
+                .permitAll());
 
         return http.build();
     }

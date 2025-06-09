@@ -1,5 +1,6 @@
 package com.example.mindfuture.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,13 +11,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class ChatGPTService {
 
-    private static final String API_KEY = "***REMOVED***_SyuUssfO0YNf_hOT3BlbkFJo0CV-zbUo6QmXjpddSI-08TZv1D6gCU2sIj2KTTVq9ePd-bUPHzwSRkClbGdabzsTQEjk9sQUA";
+    @Value("${openai.api.key}")
+    private String apiKey;
+
     private static final String ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
-     public String getResponse(String userMessage) {
+    public String getResponse(String userMessage) {
         RestTemplate restTemplate = new RestTemplate();
 
-        // JSON body
         String jsonBody = """
             {
               "model": "gpt-3.5-turbo",
@@ -27,16 +29,15 @@ public class ChatGPTService {
             }
             """.formatted(userMessage);
 
-        // Cabeceras
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(API_KEY); // Aquí se agrega correctamente la cabecera Authorization
+        headers.setBearerAuth(apiKey);  // Usa la variable inyectada
 
         HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(ENDPOINT, request, String.class);
-            
+
             ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(response.getBody());
 
