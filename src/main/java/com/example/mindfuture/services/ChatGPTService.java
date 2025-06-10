@@ -23,7 +23,7 @@ public class ChatGPTService {
             {
               "model": "gpt-3.5-turbo",
               "messages": [
-                { "role": "system", "content": "Eres un experto en salud mental que ayuda a los pacientes con consejos amables y útiles." },
+                { "role": "system", "content": "Eres un psicólogo experto en salud mental. Escuchas con empatía, validas las emociones del paciente y brindas consejos prácticos, amables y respetuosos. Siempre ofreces apoyo emocional sin juzgar." },
                 { "role": "user", "content": "%s" }
               ]
             }

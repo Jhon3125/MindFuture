@@ -132,18 +132,41 @@ body {
     left: 5px;
 }
 
+/* Boca base sin forma */
 .mouth {
     position: absolute;
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     width: 40px;
+}
+
+/* Boca feliz */
+.mouth.happy {
     height: 20px;
-    border-bottom-left-radius: 50px;
-    border-bottom-right-radius: 50px;
     border: 3px solid white;
     border-top: none;
+    border-radius: 0 0 50px 50px;
+    background: none;
 }
+
+/* Boca neutral */
+.mouth.neutral {
+    height: 5px;
+    background-color: white;
+    border: none;
+    border-radius: 0;
+}
+
+/* Boca triste */
+.mouth.sad {
+    height: 20px;
+    border: 3px solid white;
+    border-bottom: none;
+    border-radius: 50px 50px 0 0;
+    background: none;
+}
+
 
 .mood-score {
     font-size: 2rem;
@@ -257,6 +280,15 @@ body {
     color: var(--gray);
     background: #F7FAFC;
     position: relative;
+    padding: 0;
+}
+
+.mood-option i {
+    display: block;
+    line-height: 1;
+    font-size: 1.6rem; /* ajusta según el tamaño visual */
+    margin: 0;
+    padding: 0;
 }
 
 .mood-option:hover {
@@ -460,6 +492,7 @@ textarea:focus {
 .chart-container {
     height: 250px;
     margin-top: 20px;
+    position: relative;
 }
 
 /* Recommendations */
