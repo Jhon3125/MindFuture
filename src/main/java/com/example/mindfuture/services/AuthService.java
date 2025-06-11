@@ -118,7 +118,7 @@ public class AuthService {
         MindfulnessActividad actividad1 = new MindfulnessActividad();
         actividad1.setNivel(nivel);
         actividad1.setNombre("Respiración básica");
-        actividad1.setEstrellasRecompensa(1);
+        actividad1.setEstrellasRecompensa(3);
         actividad1.setTipo(MindfulnessActividad.TipoActividad.respiracion);
         actividad1.setDescripcion("Ejercicio básico de respiración para principiantes");
         actividad1.setDuracionEstimada(5);
@@ -128,7 +128,7 @@ public class AuthService {
         MindfulnessActividad actividad2 = new MindfulnessActividad();
         actividad2.setNivel(nivel);
         actividad2.setNombre("Relajación guiada");
-        actividad2.setEstrellasRecompensa(2);
+        actividad2.setEstrellasRecompensa(3);
         actividad2.setTipo(MindfulnessActividad.TipoActividad.relajacion);
         actividad2.setDescripcion("Relajación guiada para reducir el estrés");
         actividad2.setDuracionEstimada(10);

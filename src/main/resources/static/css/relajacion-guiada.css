@@ -1,0 +1,504 @@
+/* Estilos para la actividad de relajación guiada */
+.activity-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    text-align: center;
+}
+
+.activity-description {
+    margin-bottom: 2rem;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+.relaxation-body {
+    position: relative;
+    width: 300px;
+    height: 500px;
+    margin: 0 auto 2rem;
+    background-image: url('/img/humano.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.body-part {
+    position: absolute;
+    padding: 0.5rem;
+    border-radius: 50%;
+    background-color: rgba(100, 149, 237, 0.3);
+    color: white;
+    font-weight: bold;
+    transition: all 0.5s ease;
+    opacity: 0.7;
+    width: 80px;
+    text-align: center;
+}
+
+.body-part.active {
+    background-color: rgba(220, 20, 60, 0.6);
+    transform: scale(1.1);
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(220, 20, 60, 0.6);
+}
+
+.body-part.relaxed {
+    background-color: rgba(46, 139, 87, 0.6);
+    opacity: 0.8;
+}
+
+/* Posicionamiento de las partes del cuerpo */
+.head {
+    top: 5%;
+    left: 34%;
+}
+
+.shoulders {
+    top: 18%;
+    left: 28%;
+    width: 40%;
+    text-align: center;
+}
+
+.arms1 {
+    top: 40%;
+    left: 57%;
+}
+
+.arms2 {
+    top: 40%;
+    right: 57%;
+}
+
+.hands1 {
+    top: 50%;
+    left: 5%;
+}
+
+.hands2 {
+    top: 50%;
+    left: 63%;
+}
+
+.chest {
+    top: 25%;
+    left: 32.5%;
+    width: 30%;
+    text-align: center;
+}
+
+.legs {
+    top: 65%;
+    left: 35%;
+}
+
+.feet {
+    top: 85%;
+    left: 35%;
+}
+
+.instructions {
+    min-height: 60px;
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #444;
+}
+
+.timer {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2e8b57;
+    margin: 1rem 0;
+}
+
+/* Estilos mejorados para el mensaje de completado */
+.activity-completed {
+    display: none;
+    margin-top: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.completion-animation {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f0db4f;
+    opacity: 0;
+    animation: confettiFall 3s ease-in forwards;
+}
+
+.confetti:nth-child(2n) {
+    background-color: #4CAF50;
+}
+
+.confetti:nth-child(3n) {
+    background-color: #2196F3;
+}
+
+.confetti:nth-child(4n) {
+    background-color: #e91e63;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(500px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.completion-title {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.8s ease;
+}
+
+.completion-subtitle {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.8s ease 0.2s forwards;
+    opacity: 0;
+}
+
+.stars-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 1.5rem auto;
+    max-width: 300px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.8s ease 0.4s forwards;
+    opacity: 0;
+}
+
+.stars-earned {
+    font-size: 2.5rem;
+    color: #f0db4f;
+    margin-bottom: 0.5rem;
+}
+
+.stars-earned i {
+    margin: 0 5px;
+    animation: starPulse 1.5s infinite alternate;
+}
+
+.stars-earned i:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.stars-earned i:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.stars-message {
+    font-size: 1rem;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.completion-benefits {
+    text-align: left;
+    max-width: 300px;
+    margin: 1.5rem auto;
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.8s ease 0.6s forwards;
+    opacity: 0;
+}
+
+.completion-benefits p {
+    margin: 0.8rem 0;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.completion-benefits i {
+    color: #4CAF50;
+    margin-right: 10px;
+}
+
+@keyframes starPulse {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.3);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes starFall {
+    0% {
+        transform: translateY(-50px) scale(0.5);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: translateY(30px) scale(1);
+        opacity: 0;
+    }
+}
+
+.logros-desbloqueados {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.logros-lista {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.logro-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in forwards;
+    animation-delay: calc(var(--index) * 0.2s);
+}
+
+.logro-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+}
+
+.logro-item h4 {
+    margin: 0.5rem 0;
+    color: #2c3e50;
+}
+
+.logro-item p {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-actividad {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.btn-return {
+    background-color: #4a89dc;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+.btn-return:hover {
+    background-color: #3b7dd8;
+}
+
+.activity-finished {
+    animation: fadeInBackground 1s ease-in forwards;
+}
+
+@keyframes fadeInBackground {
+    to {
+        background-color: #f5f9ff;
+    }
+}
+
+/* Estilos adicionales para controles de audio */
+.audio-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.audio-controls button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #4a89dc;
+    transition: all 0.3s;
+}
+
+.audio-controls button:hover {
+    color: #3b7dd8;
+    transform: scale(1.1);
+}
+
+.volume-slider {
+    width: 100px;
+    accent-color: #4a89dc;
+}
+
+.btn-audio {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.btn-audio:hover {
+    background-color: #45a049;
+}
+
+#tts-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #4a89dc;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+#tts-toggle:hover {
+    background-color: #f0f0f0;
+}
+
+#tts-toggle i {
+    margin-right: 5px;
+}
+
+#activity-completed .button-return.pulse-animation {
+    background: linear-gradient(to right, #4a89dc, #3b7dd8);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(74, 137, 220, 0.3);
+    min-width: 220px;
+    text-align: center;
+    animation: fadeInUp 0.8s ease 0.8s forwards;
+    opacity: 0;
+}
+
+#activity-completed .button-return.pulse-animation:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(74, 137, 220, 0.4);
+    background: linear-gradient(to right, #3b7dd8, #2e6fd5);
+}
+
+#activity-completed .button-return.pulse-animation:active {
+    transform: translateY(1px);
+}
+
+#activity-completed .button-return.pulse-animation i {
+    font-size: 1.2em;
+    transition: transform 0.3s;
+}
+
+#activity-completed .button-return.pulse-animation:hover i {
+    transform: translateX(3px);
+}
+
+/* Animación de pulso mejorada */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(74, 137, 220, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 12px rgba(74, 137, 220, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(74, 137, 220, 0);
+    }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}

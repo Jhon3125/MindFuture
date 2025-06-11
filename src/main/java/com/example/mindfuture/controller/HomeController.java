@@ -10,8 +10,6 @@ public class HomeController {
     // Página principal accesible sin login
     @GetMapping({ "/", "/index" })
     public String home(Model model) {
-        // Puedes agregar lógica para mostrar contenido diferente a usuarios
-        // autenticados
         return "index";
     }
 

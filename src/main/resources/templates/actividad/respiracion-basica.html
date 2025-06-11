@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${actividad.nombre} + ' | Mind Future'">Actividad | Mind Future</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/nav.css}">
+    <link rel="stylesheet" th:href="@{/css/respiracion-basica.css}">
+    <script th:src="@{/js/respiracion-basica.js}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="activity-container">
+        <h1 th:text="${actividad.nombre}">Respiración Básica</h1>
+        <p class="activity-description" th:text="${actividad.descripcion}">
+            Ejercicio de respiración guiada para reducir el estrés y mejorar la concentración.
+        </p>
+
+        <div class="activity-content" id="respirar-content">
+            <div class="breathing-circle" id="breathing-circle">
+                <span class="breathing-text" id="breathing-text">INHALA</span>
+            </div>
+            <div class="timer" id="time-left" th:text="${actividad.duracionEstimada} + ':00'">2:00</div>
+        </div>
+
+        <!-- Formulario oculto para completar actividad -->
+        <form id="completeActivityForm" method="post" action="/mindfulness/completar-actividad"
+            th:object="${actividad}">
+            <input type="hidden" name="idActividad" th:value="${actividad.idActividad}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        </form>
+
+        <div class="activity-completed" id="activity-completed">
+            <h2>¡Actividad completada!</h2>
+            <p>Has ganado <span id="stars-earned" th:text="${actividad.estrellasRecompensa}">0</span> estrellas</p>
+
+            <!-- Cambiado a event listener en lugar de onclick -->
+            <button type="button" class="btn-return" id="submitActivityBtn">Volver a los juegos</button>
+
+            <!-- Contenedor para logros desbloqueados -->
+            <div id="achievements-container"></div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            // Pasar los datos de la actividad al script externo
+            const actividadData = {
+                id: [[${ actividad.idActividad }]],
+                duracion: [[${ actividad.duracionEstimada }]],
+                estrellas: [[${ actividad.estrellasRecompensa }]]
+            };
+
+            initRespiracionBasica(actividadData);
+        });
+    </script>
+</body>
+
+</html>
