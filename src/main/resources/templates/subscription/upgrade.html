@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar a Premium - MindFuture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/suscription.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container">
+    <div class="payment-form-container">
+        <div class="benefits-section">
+            <h2 class="section-title">Beneficios Premium</h2>
+
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="benefit-content">
+                    <h3>Mindfulness Ilimitado</h3>
+                    <p>Acceso completo a todas nuestras actividades y sesiones guiadas de mindfulness</p>
+                    <span class="premium-badge">EXCLUSIVO</span>
+                </div>
+            </div>
+
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-vr-cardboard"></i>
+                </div>
+                <div class="benefit-content">
+                    <h3>Terapia VR Premium</h3>
+                    <p>Experiencias inmersivas completas para una terapia más profunda</p>
+                </div>
+            </div>
+
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="benefit-content">
+                    <h3>Análisis Avanzado</h3>
+                    <p>Informes detallados de tu progreso y recomendaciones personalizadas</p>
+                </div>
+            </div>
+
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="benefit-content">
+                    <h3>Soporte Prioritario</h3>
+                    <p>Atención personalizada de nuestro equipo de especialistas</p>
+                </div>
+            </div>
+
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div class="benefit-content">
+                    <h3>Contenido Exclusivo</h3>
+                    <p>Nuevas funciones y contenido antes que nadie</p>
+                    <span class="premium-badge">PRIMER ACCESO</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-form">
+            <h2 class="section-title">Información de Pago</h2>
+            <div class="price-tag">
+                Pago único: <span th:text="${precio}">49.99</span> €
+            </div>
+
+            <form th:action="@{/subscription/process-payment}" method="post">
+                <div class="form-group">
+                    <label for="cardNumber">Número de tarjeta</label>
+                    <div class="input-with-icon">
+                        <i class="far fa-credit-card"></i>
+                        <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardName">Nombre en la tarjeta</label>
+                    <div class="input-with-icon">
+                        <i class="far fa-user"></i>
+                        <input type="text" id="cardName" placeholder="Juan Pérez" required>
+                    </div>
+                </div>
+
+                <div class="flex-group">
+                    <div class="form-group">
+                        <label for="expiry">Fecha de expiración</label>
+                        <div class="input-with-icon">
+                            <i class="far fa-calendar-alt"></i>
+                            <input type="text" id="expiry" placeholder="MM/AA" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="text" id="cvv" placeholder="123" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-icons">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="American Express">
+                </div>
+
+                <button type="submit" class="btn-pay">
+                    <i class="fas fa-lock"></i> Pagar ahora
+                </button>
+            </form>
+
+            <div class="secure-note">
+                <i class="fas fa-shield-alt"></i>
+                <p>Pago seguro con encriptación SSL - Tus datos están protegidos</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    // Animación para los elementos al cargar
+    document.addEventListener('DOMContentLoaded', function() {
+        const elements = document.querySelectorAll('.benefit-item, .payment-form, .benefits-section');
+
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, 100);
+            }, 100 * index);
+        });
+
+        // Efecto de escritura para el título
+        const title = document.querySelector('.header h1');
+        const originalText = title.textContent;
+        title.textContent = '';
+        let i = 0;
+
+        const typeWriter = () => {
+            if (i < originalText.length) {
+                title.textContent += originalText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        };
+
+        typeWriter();
+    });
+</script>
+</body>
+</html>
