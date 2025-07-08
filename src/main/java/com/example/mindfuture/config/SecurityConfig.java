@@ -13,6 +13,12 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CustomAuthenticationSuccessHandler successHandler;
+
+    public SecurityConfig(CustomAuthenticationSuccessHandler successHandler) {
+        this.successHandler = successHandler;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -20,11 +26,13 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**").permitAll()
-                        .requestMatchers("/vr-therapy", "/mood-tracker", "/mindfulness-game").authenticated()
+                        .requestMatchers("/users/**", "/therapy/**", "/mood-tracker", "/mindfulness-game", "/suscription/**")
+                        .hasAnyRole("usuario", "terapeuta", "admin")
+                        .requestMatchers("/admin/**").hasRole("admin")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .defaultSuccessUrl("/", true)
+                        .successHandler(successHandler) // REDIRECCIÓN AQUÍ
                         .failureUrl("/auth/login?error=true")
                         .permitAll())
                 .logout(logout -> logout

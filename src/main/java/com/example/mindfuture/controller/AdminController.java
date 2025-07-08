@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin")
 public class AdminController {
 
-    @GetMapping("/vistaejemplo")
+    @GetMapping("/dashboard")
     public String mostrarVistaEjemplo() {
         return "admin/vistaejemplo";
     }
