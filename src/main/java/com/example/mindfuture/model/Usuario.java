@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,12 +26,15 @@ import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "usuarios")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"terapeuta", "sesiones", "emociones", "biometrias", "progresos", "actividadesUsuario", "logros", "recomendaciones"})
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idUsuario")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +66,7 @@ public class Usuario {
     private Date fechaRegistro;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
     private Terapeuta terapeuta;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -82,6 +89,18 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Recomendacion> recomendaciones = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_suscripcion", columnDefinition = "ENUM('gratis', 'premium')")
+    private TipoSuscripcion tipoSuscripcion = TipoSuscripcion.gratis;
+
+    @Column(name = "fecha_premium")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaPremium;
+
+    public enum TipoSuscripcion {
+        gratis, premium
+    }
 
     public enum Genero {
         M, F, Otro

@@ -27,29 +27,29 @@ public class Sesion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idSesion;
-    
+
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
-    
+
     @ManyToOne
     @JoinColumn(name = "id_terapeuta", nullable = false)
     private Terapeuta terapeuta;
-    
+
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('VR', 'chat', 'video')")
+    @Column(columnDefinition = "ENUM('VR', 'Zoom')")
     private TipoSesion tipo;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-    
+
     @Column(name = "duracion_minutos")
     private Integer duracionMinutos;
-    
-    @Column(columnDefinition = "TEXT")
-    private String notas;
-    
+
+    @Column(name = "url", length = 1000)
+    private String url;
+
     public enum TipoSesion {
-        VR, chat, video
+        VR, Zoom
     }
 }
