@@ -1,3 +1,4 @@
+<!-- Footer Section -->
 <footer class="mindfuture-footer">
     <div class="footer-container">
         <!-- Logo y descripción -->
@@ -16,9 +17,9 @@
         <div class="footer-links">
             <h4>Explora</h4>
             <ul>
-                <li><a th:href="@{/vr-therapy}">VR Therapy Hub</a></li>
+                <li><a th:href="@{/therapy/vr}">VR Therapy Hub</a></li>
                 <li><a th:href="@{/mood-tracker}">Mood Tracker</a></li>
-                <li><a th:href="@{/mindfulness-game}">Mindfulness Game</a></li>
+                <li><a th:href="@{/mindfulness/mindfulness-game}">Mindfulness Game</a></li>
             </ul>
         </div>
 
@@ -32,14 +33,14 @@
             </ul>
         </div>
 
-        <!-- Newsletter -->
-        <div class="footer-newsletter">
-            <h4>Suscríbete</h4>
-            <p>Recibe tips de bienestar y novedades.</p>
-            <form class="newsletter-form">
-                <input type="email" placeholder="Tu email" required>
-                <button type="submit"><i class="fas fa-paper-plane"></i></button>
-            </form>
+        <!-- Sección de Actualización -->
+        <div class="footer-upgrade">
+            <h4>Experiencia Premium</h4>
+            <p>Desbloquea todas las funciones de VR Therapy</p>
+            <a th:href="@{/subscription/upgrade}" class="btn-upgrade">
+                Actualizar Suscripción
+                <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
     </div>
 
