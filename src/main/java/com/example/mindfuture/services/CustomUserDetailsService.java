@@ -2,6 +2,7 @@ package com.example.mindfuture.services;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.mindfuture.model.Usuario;
+import com.example.mindfuture.model.Usuario.TipoSuscripcion;
 import com.example.mindfuture.repository.UsuarioRepository;
 
 @Service
@@ -30,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(usuario);
     }
 
-    // Clase interna para mantener la referencia al usuario
+    // Clase interna mejorada
     public static class CustomUserDetails implements UserDetails {
         private final Usuario usuario;
 
@@ -38,8 +40,30 @@ public class CustomUserDetailsService implements UserDetailsService {
             this.usuario = usuario;
         }
 
+        // Método para acceder al usuario completo
         public Usuario getUsuario() {
             return usuario;
+        }
+
+        // Métodos específicos para acceder a propiedades importantes
+        public Integer getIdUsuario() {
+            return usuario.getIdUsuario();
+        }
+
+        public String getNombre() {
+            return usuario.getNombre();
+        }
+
+        public TipoSuscripcion getTipoSuscripcion() {
+            return usuario.getTipoSuscripcion();
+        }
+
+        public Date getFechaPremium() {
+            return usuario.getFechaPremium();
+        }
+
+        public Usuario.Rol getRol() {
+            return usuario.getRol();
         }
 
         @Override
