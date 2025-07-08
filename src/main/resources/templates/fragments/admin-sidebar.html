@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+  <div th:fragment="admin-sidebar">
+    <div id="sidebar">
+      <div class="sidebar-logo">
+        <img src="/img/logo-claro.png" alt="MindFuture">
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-item active">
+          <i class="fas fa-tachometer-alt"></i>
+          <span class="sidebar-text">Dashboard</span>
+        </a>
+        <a href="#" class="sidebar-item">
+          <i class="fas fa-users"></i>
+          <span class="sidebar-text">Usuarios</span>
+        </a>
+        <a href="#" class="sidebar-item">
+          <i class="fas fa-user-md"></i>
+          <span class="sidebar-text">Terapeutas</span>
+        </a>
+        <a href="#" class="sidebar-item">
+          <i class="fas fa-calendar-alt"></i>
+          <span class="sidebar-text">Sesiones</span>
+        </a>
+
+        <div class="sidebar-divider"></div>
+
+        <a th:href="@{/}" class="sidebar-item">
+          <i class="fas fa-home"></i>
+          <span class="sidebar-text">Ir a la página principal</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post" class="d-grid">
+          <button type="submit" class="btn btn-outline-light">
+            <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
