@@ -28,6 +28,14 @@ public class SesionService {
         return sesionRepository.findByUsuario(usuario);
     }
 
+    public long countSesionesProgramadas() {
+        return sesionRepository.countByFechaAfter(LocalDateTime.now());
+    }
+
+    public long countSesionesByTipo(Sesion.TipoSesion tipo) {
+        return sesionRepository.countByTipo(tipo);
+    }
+
     @Transactional
     public void crearSesionDesdeFormulario(CrearSesionDTO dto, Usuario usuario) {
         Terapeuta terapeuta = terapeutaRepository.findById(dto.getTherapistId())
