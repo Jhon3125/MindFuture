@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -12,25 +13,38 @@
         <nav class="main-nav">
             <ul>
                 <li><a th:href="@{/mindfulness/mindfulness-game}">Mindfulness Game</a></li>
-                <li><a th:href="@{/vr-therapy}">VR Therapy</a></li>
+                <li><a th:href="@{/therapy/vr}">VR Therapy</a></li>
                 <li><a th:href="@{/mood-tracker}">Mood Tracker</a></li>
 
                 <!-- Usuario autenticado -->
-                <li sec:authorize="isAuthenticated()">
-                    <span class="user-name" sec:authentication="name"></span>
+                <li sec:authorize="isAuthenticated()" class="user-info">
+                    <span class="user-name" th:text="${#authentication.principal.nombre}"></span>
+                    <span class="user-status"
+                        th:classappend="${#authentication.principal.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium} ? 'premium-badge' : 'free-badge'">
+                        <i class="fas fa-crown"
+                            th:if="${#authentication.principal.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium}"></i>
+                        <span
+                            th:text="${#authentication.principal.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium} ? 'Premium' : 'Free'"></span>
+                    </span>
                 </li>
                 <li class="auth-buttons" sec:authorize="isAuthenticated()">
                     <form th:action="@{/logout}" method="post" class="logout-form">
-                        <button type="submit" class="btn-auth btn-logout">Cerrar Sesión</button>
+                        <button type="submit" class="btn-auth btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
                     </form>
                 </li>
 
                 <!-- Usuario no autenticado -->
                 <li class="auth-buttons" sec:authorize="!isAuthenticated()">
-                    <a th:href="@{/auth/login}" class="btn-auth btn-login">Iniciar Sesión</a>
+                    <a th:href="@{/auth/login}" class="btn-auth btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </a>
                 </li>
                 <li class="auth-buttons" sec:authorize="!isAuthenticated()">
-                    <a th:href="@{/auth/register}" class="btn-auth btn-register">Registrarse</a>
+                    <a th:href="@{/auth/register}" class="btn-auth btn-register">
+                        <i class="fas fa-user-plus"></i> Registrarse
+                    </a>
                 </li>
             </ul>
         </nav>
