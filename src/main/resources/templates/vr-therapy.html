@@ -1,45 +1,130 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VR Therapy Hub | Mind Future</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" th:href="@{/css/nav.css}">
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/vr-therapy.css">
 </head>
 
 <body>
     <div th:replace="~{fragments/header :: header}"></div>
 
-    <section class="vr-hero">
-        <h2>Explora entornos terapéuticos inmersivos</h2>
-        <p>Conecta con terapeutas y pacientes en un espacio seguro.</p>
-        <div class="vr-options">
-            <button class="btn-vr">Acceder con Visor VR</button>
-            <button class="btn-web">Acceder desde Navegador</button>
-        </div>
-    </section>
+    <div style="display: none;">
+        <!-- Depuración de Thymeleaf -->
+        <p>Valor de therapists: <span th:text="${therapists}"></span></p>
+        <p>Tamaño de therapists: <span th:text="${therapists != null ? #lists.size(therapists) : 'null'}"></span></p>
+        <p>Primer terapeuta: <span
+                th:text="${therapists != null and !#lists.isEmpty(therapists) ? therapists[0].usuario.nombre : 'N/A'}"></span>
+        </p>
+    </div>
 
-    <section class="vr-environments">
-        <h3>Entornos disponibles</h3>
-        <div class="environments-grid">
-            <div class="environment-card">
-                <img src="img/bosque.jpg" alt="Bosque Relajante">
-                <h4>Bosque Relajante</h4>
+    <main class="vr-container">
+        <!-- Contenido para usuarios premium -->
+        <section class="premium-content"
+            th:if="${#authentication.principal.usuario.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium}">
+            <div class="vr-hero">
+                <h2>Explora entornos terapéuticos inmersivos</h2>
+                <p>Experiencia VR completa disponible para ti</p>
             </div>
-            <div class="environment-card">
-                <img src="img/playa.jpg" alt="Playa al Atardecer">
-                <h4>Playa al Atardecer</h4>
+
+            <div class="vr-demo">
+                <h3>Demo de sesión VR</h3>
+                <div class="video-container">
+                    <video controls poster="/">
+                        <source src="/video/vr-therapy-demo.mp4" type="video/mp4">
+                        Tu navegador no soporta el elemento de video.
+                    </video>
+                </div>
+                <div class="vr-options">
+                    <button class="btn-vr">Conectar Visor VR</button>
+                    <button class="btn-web">Configurar Sesión</button>
+                </div>
             </div>
-            <div class="environment-card">
-                <img src="img/montaña.jpg" alt="Montaña Serena">
-                <h4>Montaña Serena</h4>
+
+            <section class="vr-environments">
+                <h3>Entornos premium disponibles</h3>
+                <div class="environments-grid">
+                    <div class="environment-card">
+                        <img src="/img/bosque.jpg" alt="Bosque Relajante">
+                        <h4>Bosque Relajante</h4>
+                    </div>
+                    <div class="environment-card">
+                        <img src="/img/playa.jpg" alt="Playa al Atardecer">
+                        <h4>Playa al Atardecer</h4>
+                    </div>
+                    <div class="environment-card">
+                        <img src="/img/montaña.jpg" alt="Montaña Serena">
+                        <h4>Montaña Serena</h4>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Contenido para usuarios free -->
+        <section class="free-content"
+            th:unless="${#authentication.principal.usuario.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium}">
+            <div class="zoom-hero">
+                <h2>Sesiones de Terapia por Zoom</h2>
+                <p>Conéctate con nuestros terapeutas certificados</p>
             </div>
-        </div>
-    </section>
+
+            <div class="zoom-options">
+                <div class="schedule-session">
+                    <h3>Programar nueva sesión</h3>
+                    <form th:action="@{/therapy/session}" method="post" class="session-form">
+                        <input type="hidden" name="sessionType" value="Zoom">
+                        <div class="form-group">
+                            <label for="session-date">Fecha:</label>
+                            <input type="date" id="session-date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="session-time">Hora:</label>
+                            <input type="time" id="session-time" name="time" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="therapist">Terapeuta:</label>
+                            <select id="therapist" name="therapistId" required>
+                                <option value="">Selecciona un terapeuta</option>
+                                <option th:each="therapist : ${therapists}" th:value="${therapist.idTerapeuta}"
+                                    th:text="${therapist.usuario.nombre}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duración (minutos):</label>
+                            <input type="number" id="duration" name="duration" min="15" max="120" value="45" required>
+                        </div>
+                        <button type="submit" class="btn-zoom">Programar Sesión</button>
+                    </form>
+                </div>
+
+                <div class="upcoming-sessions">
+                    <h3>Tus sesiones programadas</h3>
+                    <div class="session-list">
+                        <div class="session-item" th:each="ses : ${sessions}">
+                            <div class="session-info">
+                                <span class="session-type" th:text="${ses.tipo == 'VR' ? 'VR' : 'Zoom'}"></span>
+                                <span class="session-date" th:text="${#dates.format(ses.fecha, 'dd/MM/yyyy')}"></span>
+                                <span class="session-time" th:text="${#dates.format(ses.fecha, 'HH:mm')}"></span>
+                                <span class="session-therapist" th:text="${ses.terapeuta.usuario.nombre}"></span>
+                                <span class="session-duration" th:text="${ses.duracionMinutos + ' min'}"></span>
+                            </div>
+                            <a th:href="${ses.url}" class="btn-join" target="_blank">
+                                <span th:text="${ses.tipo == 'VR' ? 'Iniciar VR' : 'Unirse a Zoom'}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 

@@ -13,14 +13,13 @@ public class HomeController {
         return "index";
     }
 
-    // Otras rutas protegidas (requieren login)
-    @GetMapping("/vr-therapy")
-    public String vrTherapy() {
-        return "vr-therapy";
-    }
-
     @GetMapping("/mood-tracker")
     public String moodTracker() {
         return "mood-tracker";
+    }
+
+    @GetMapping("/403")
+    public String error403() {
+        return "/error/error403";
     }
 }

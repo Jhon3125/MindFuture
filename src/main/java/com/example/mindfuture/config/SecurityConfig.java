@@ -13,22 +13,39 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final CustomAuthenticationSuccessHandler successHandler;
+
+    public SecurityConfig(CustomAuthenticationSuccessHandler successHandler) {
+        this.successHandler = successHandler;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+<<<<<<< HEAD
                         .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**", "/chat/**", "/api/emociones/**").permitAll()
                         .requestMatchers("/vr-therapy", "/mood-tracker", "/mindfulness-game").authenticated()
+=======
+                        .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**").permitAll()
+                        .requestMatchers("/users/**", "/therapy/**", "/mood-tracker", "/mindfulness-game", "/suscription/**")
+                        .hasAnyRole("usuario", "terapeuta", "admin")
+                        .requestMatchers("/admin/**").hasRole("admin")
+>>>>>>> d31345e4c886f2edb8d45e950e8fb0e090039097
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .defaultSuccessUrl("/", true)
+                        .successHandler(successHandler)
                         .failureUrl("/auth/login?error=true")
                         .permitAll())
                 .logout(logout -> logout
                         .logoutSuccessUrl("/?logout")
-                        .permitAll());
+                        .permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/403")
+                );
 
         return http.build();
     }
