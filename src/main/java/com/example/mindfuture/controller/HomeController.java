@@ -18,8 +18,8 @@ public class HomeController {
         return "mood-tracker";
     }
 
-    @GetMapping("/error/403")
+    @GetMapping("/403")
     public String error403() {
-        return "error/403";
+        return "/error/error403";
     }
 }
