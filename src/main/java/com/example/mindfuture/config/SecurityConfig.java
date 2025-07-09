@@ -32,12 +32,16 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .successHandler(successHandler) // REDIRECCIÓN AQUÍ
+                        .successHandler(successHandler)
                         .failureUrl("/auth/login?error=true")
                         .permitAll())
                 .logout(logout -> logout
                         .logoutSuccessUrl("/?logout")
-                        .permitAll());
+                        .permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/403")
+                );
 
         return http.build();
     }
