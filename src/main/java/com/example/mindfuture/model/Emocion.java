@@ -4,8 +4,6 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -45,14 +43,6 @@ public class Emocion {
 
     @Column(columnDefinition = "TEXT")
     private String recomendacion;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('voz', 'texto', 'biometria')")
-    private Fuente fuente;
-
-    public enum Fuente {
-        voz, texto, biometria
-    }
 
     @PrePersist
     protected void onCreate() {

@@ -1,6 +1,6 @@
+let currentDate = new Date();
 document.addEventListener('DOMContentLoaded', function () {
     // Configuración inicial
-    const currentDate = new Date();
     updateDateDisplay(currentDate);
 
     // Inicializar gráfico
@@ -23,9 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: false
-                }
+                legend: { display: false }
             },
             scales: {
                 y: {
@@ -44,42 +42,101 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Event listeners
-    document.getElementById('prev-day').addEventListener('click', function () {
-        currentDate.setDate(currentDate.getDate() - 1);
-        updateDateDisplay(currentDate);
-        loadMoodData(currentDate);
-    });
+    document.querySelectorAll('input[name="mood"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const value = parseInt(this.value);
 
-    document.getElementById('next-day').addEventListener('click', function () {
-        currentDate.setDate(currentDate.getDate() + 1);
-        updateDateDisplay(currentDate);
-        loadMoodData(currentDate);
-    });
+            // Convertimos el valor a moodValue (estrés del 1 al 100)
+            let emocionDetectada = ''; // nueva
 
-    document.querySelectorAll('.time-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            updateChart(this.textContent.trim());
+            switch (value) {
+                case 5:
+                    moodValue = 90;
+                    tags = ['Excelente', 'Positivo'];
+                    analysis = 'Te sientes excelente, ¡qué buena vibra!';
+                    emocionDetectada = 'excelente';
+                    break;
+                case 4:
+                    moodValue = 75;
+                    tags = ['Bien'];
+                    analysis = 'Parece que estás teniendo un buen día.';
+                    emocionDetectada = 'bien';
+                    break;
+                case 3:
+                    moodValue = 55;
+                    tags = ['Normal'];
+                    analysis = 'Un día equilibrado, sin altibajos.';
+                    emocionDetectada = 'normal';
+                    break;
+                case 2:
+                    moodValue = 35;
+                    tags = ['Mal'];
+                    analysis = 'Parece que estás algo decaído.';
+                    emocionDetectada = 'mal';
+                    break;
+                case 1:
+                    moodValue = 15;
+                    tags = ['Pésimo'];
+                    analysis = 'Ánimo. Habla con alguien.';
+                    emocionDetectada = 'pesimo';
+                    break;
+            }
+
+
+            // Llamamos a updateUI con los datos simulados
+            updateUI({
+                moodValue,
+                moodTags: tags,
+                moodAnalysis: analysis,
+                biometrics: {
+                    heartRate: 72,
+                    sleepHours: 7.5,
+                    energyLevel: 6
+                },
+                emocionDetectada // <--- esto es nuevo
+            });
+
         });
     });
-
-    document.getElementById('analyze-text').addEventListener('click', analyzeText);
-    document.getElementById('sync-wearable').addEventListener('click', syncWearable);
-    document.getElementById('save-mood').addEventListener('click', saveMood);
-
-    // Cargar datos iniciales
-    loadMoodData(currentDate);
-    loadRecommendations();
-
-    // Simular datos de wearable
-    setTimeout(() => {
-        document.getElementById('heart-rate').textContent = '72';
-        document.getElementById('sleep-hours').textContent = '7.5';
-        document.getElementById('energy-level').textContent = '6';
-    }, 1500);
 });
+
+
+// Event listeners
+document.getElementById('prev-day').addEventListener('click', function () {
+    currentDate.setDate(currentDate.getDate() - 1);
+    updateDateDisplay(currentDate);
+    loadMoodData(currentDate);
+});
+
+document.getElementById('next-day').addEventListener('click', function () {
+    currentDate.setDate(currentDate.getDate() + 1);
+    updateDateDisplay(currentDate);
+    loadMoodData(currentDate);
+});
+
+document.querySelectorAll('.time-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        updateChart(this.textContent.trim());
+    });
+});
+
+document.getElementById('analyze-text').addEventListener('click', analyzeText);
+document.getElementById('sync-wearable').addEventListener('click', syncWearable);
+document.getElementById('save-mood').addEventListener('click', saveMood);
+
+// Cargar datos iniciales
+loadMoodData(currentDate);
+loadRecommendations();
+
+// Simular datos de wearable
+setTimeout(() => {
+    document.getElementById('heart-rate').textContent = '72';
+    document.getElementById('sleep-hours').textContent = '7.5';
+    document.getElementById('energy-level').textContent = '6';
+}, 1500);
+
 
 function updateDateDisplay(date) {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -87,39 +144,76 @@ function updateDateDisplay(date) {
 }
 
 function loadMoodData(date) {
-    // Simular carga de datos desde el backend
-    console.log(`Cargando datos para ${date.toISOString().split('T')[0]}`);
+    const fechaISO = date.toISOString().split('T')[0];
+    const emailUsuario = 'carlosperez@gmail.com';
 
-    // Aquí iría la llamada fetch a tu API Spring Boot
-    // fetch(`/api/mood-data?date=${date.toISOString().split('T')[0]}`)
-    //   .then(response => response.json())
-    //   .then(data => updateUI(data));
+    console.log(`🔄 Cargando datos para ${fechaISO}`);
 
-    // Datos de ejemplo
-    const mockData = {
-        moodValue: 72,
-        moodTags: ['Calmado', 'Enfocado'],
-        moodAnalysis: 'Nuestro análisis indica que te encuentras en un estado emocional equilibrado. Tu nivel de estrés es bajo y tu frecuencia cardíaca se mantiene estable.',
-        biometrics: {
-            heartRate: 72,
-            sleepHours: 7.5,
-            energyLevel: 6
-        }
-    };
+    fetch(`/api/emociones?email=${encodeURIComponent(emailUsuario)}&fecha=${fechaISO}`)
+        .then(async res => {
+            const text = await res.text();
+            if (!res.ok) {
+                if (res.status === 404) {
+                    console.log(`ℹ️ No hay emoción registrada para ${fechaISO}.`);
+                    return null; // <-- No hay error, solo sin datos
+                }
+                throw new Error(text);
+            }
+            return JSON.parse(text);
+        })
+        .then(data => {
+            if (!data) return; // No hacer nada si no hay datos
 
-    updateUI(mockData);
+            updateUI({
+                moodValue: data.nivelEstres,
+                moodTags: data.tags || [],
+                moodAnalysis: data.recomendacion || '',
+                biometrics: {
+                    heartRate: data.heartRate || 72,
+                    sleepHours: data.sleepHours || 7,
+                    energyLevel: data.energyLevel || 5
+                },
+                emocionDetectada: data.emocionDetectada
+            });
+        })
+        .catch(err => {
+            console.error('❌ Error al cargar datos desde el backend:', err.message);
+        });
 }
 
+
+
 function updateUI(data) {
+    // Actualizar valor
     document.getElementById('mood-value').textContent = data.moodValue;
 
     const moodFace = document.getElementById('mood-face');
-    moodFace.className = 'mood-face'; // Resetear clases de cara
+    // resetear cara...
 
+    // Actualizar tags
+    const tagsContainer = document.getElementById('mood-tags');
+    tagsContainer.innerHTML = '';
+    data.moodTags.forEach(tag => {
+        const span = document.createElement('span');
+        span.className = `tag ${tag.toLowerCase()}`;
+        span.textContent = tag;
+        tagsContainer.appendChild(span);
+    });
+
+    // Actualizar análisis
+    document.getElementById('mood-analysis').textContent = data.moodAnalysis;
+
+    // Actualizar biometría
+    if (data.biometrics) {
+        document.getElementById('heart-rate').textContent = data.biometrics.heartRate;
+        document.getElementById('sleep-hours').textContent = data.biometrics.sleepHours;
+        document.getElementById('energy-level').textContent = data.biometrics.energyLevel;
+    }
+
+    // Lógica para estado de ánimo
     const mouth = moodFace.querySelector('.mouth');
-    mouth.className = 'mouth'; // Resetear clases de la boca
+    mouth.className = 'mouth';
 
-    // Cambiar emoción y boca
     if (data.moodValue >= 80) {
         moodFace.classList.add('happy');
         mouth.classList.add('happy');
@@ -131,22 +225,29 @@ function updateUI(data) {
         mouth.classList.add('sad');
     }
 
-    // Guardar emoción (opcional)
-    guardarDatosEmocion(data);
+    // NO guardar automáticamente al seleccionar carita
+    // guardarDatosEmocion({
+    //     ...data,
+    //     emocionDetectada: data.emocionDetectada || ''
+    // });
+
 }
 
-function guardarDatosEmocion(data) {
-    let emocionDetectada = '';
-    let recomendacion = '';
 
+function guardarDatosEmocion(data) {
+    const emocionDetectada = data.emocionDetectada || (
+        data.moodValue >= 85 ? 'excelente' :
+            data.moodValue >= 70 ? 'bien' :
+                data.moodValue >= 55 ? 'normal' :
+                    data.moodValue >= 30 ? 'mal' : 'pesimo'
+    );
+
+    let recomendacion = '';
     if (data.moodValue >= 80) {
-        emocionDetectada = 'feliz';
         recomendacion = 'Sigue así, mantén tus hábitos positivos.';
     } else if (data.moodValue >= 50) {
-        emocionDetectada = 'neutral';
         recomendacion = 'Tómate un descanso y haz algo que te guste.';
     } else {
-        emocionDetectada = 'triste';
         recomendacion = 'Habla con alguien de confianza o escribe lo que sientes.';
     }
 
@@ -154,51 +255,27 @@ function guardarDatosEmocion(data) {
         emocionDetectada: emocionDetectada,
         nivelEstres: data.moodValue,
         recomendacion: recomendacion,
-        fuente: 'texto', // Debe ser exactamente: texto, voz o biometria
-        emailUsuario: 'usuario@correo.com' // o el email del usuario logueado
+        emailUsuario: 'carlosperez@gmail.com'
     };
+
+    console.log("📤 Enviando datos a /api/emociones:", emocionData);
 
     fetch('/api/emociones', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(emocionData)
-    }).then(res => {
-        if (res.ok) {
-            console.log('Emoción guardada correctamente');
-        } else {
-            console.error('Error al guardar la emoción');
-        }
-    }).catch(err => {
-        console.error('Error en la conexión con la API:', err);
-    });
-}
-
-// Actualizar tags
-const tagsContainer = document.getElementById('mood-tags');
-tagsContainer.innerHTML = '';
-
-data.moodTags.forEach(tag => {
-    const span = document.createElement('span');
-    span.className = `tag ${tag.toLowerCase()}`;
-    span.textContent = tag;
-    tagsContainer.appendChild(span);
-});
-
-// Actualizar análisis
-document.getElementById('mood-analysis').textContent = data.moodAnalysis;
-
-// Actualizar biometría
-if (data.biometrics) {
-    document.getElementById('heart-rate').textContent = data.biometrics.heartRate;
-    document.getElementById('sleep-hours').textContent = data.biometrics.sleepHours;
-    document.getElementById('energy-level').textContent = data.biometrics.energyLevel;
+    })
+        .then(res => {
+            if (!res.ok) throw new Error('Error en la respuesta del servidor');
+            console.log('✅ Emoción guardada correctamente');
+        })
+        .catch(err => {
+            console.error('❌ Error al guardar la emoción:', err);
+        });
 }
 
 function updateChart(timeRange) {
     console.log(`Actualizando gráfico para ${timeRange}`);
-    // Aquí iría la llamada fetch para obtener datos históricos
 }
 
 function analyzeText() {
@@ -208,19 +285,12 @@ function analyzeText() {
         return;
     }
 
-    // Simular análisis de IA
-    console.log('Analizando texto con IA:', text);
-
-    // Mostrar carga
     const btn = document.getElementById('analyze-text');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analizando...';
     btn.disabled = true;
 
-    // Simular demora de red
     setTimeout(() => {
-        // Resultados simulados basados en palabras clave
         let moodValue, tags, analysis;
-
         if (text.toLowerCase().includes('bien') || text.toLowerCase().includes('feliz')) {
             moodValue = 85;
             tags = ['Positivo', 'Energético'];
@@ -235,40 +305,21 @@ function analyzeText() {
             analysis = 'Tu estado emocional parece equilibrado. No detectamos emociones extremas.';
         }
 
-        // Actualizar UI con resultados
-        document.getElementById('mood-value').textContent = moodValue;
+        updateUI({ moodValue, moodTags: tags, moodAnalysis: analysis, biometrics: { heartRate: 72, sleepHours: 7.5, energyLevel: 6 } });
 
-        const tagsContainer = document.getElementById('mood-tags');
-        tagsContainer.innerHTML = '';
-        tags.forEach(tag => {
-            const span = document.createElement('span');
-            span.className = `tag ${tag.toLowerCase()}`;
-            span.textContent = tag;
-            tagsContainer.appendChild(span);
-        });
-
-        document.getElementById('mood-analysis').textContent = analysis;
-
-        // Restaurar botón
         btn.innerHTML = '<i class="fas fa-robot"></i> Analizar con IA';
         btn.disabled = false;
 
-        // Mostrar confirmación
         alert('Análisis completado. Hemos actualizado tu estado emocional.');
     }, 2000);
 }
 
 function syncWearable() {
-    console.log('Sincronizando con wearable...');
-    // Aquí iría la integración con Web Bluetooth API
-
-    // Simular sincronización
     const btn = document.getElementById('sync-wearable');
     btn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Sincronizando...';
     btn.disabled = true;
 
     setTimeout(() => {
-        // Datos simulados
         document.getElementById('heart-rate').textContent = Math.floor(Math.random() * 30) + 60;
         document.getElementById('sleep-hours').textContent = (Math.random() * 3 + 5).toFixed(1);
         document.getElementById('energy-level').textContent = Math.floor(Math.random() * 4) + 4;
@@ -280,74 +331,66 @@ function syncWearable() {
     }, 1500);
 }
 
-function saveMood(data) {
+function saveMood() {
     const btn = document.getElementById('save-mood');
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
     btn.disabled = true;
 
-    const payload = {
-        emocionDetectada: data.emocionDetectada,
-        nivelEstres: data.moodValue,
-        recomendacion: data.recomendacion,
-        fuente: data.fuente
+    // Obtener los datos mostrados en la pantalla
+    const nivelEstres = parseInt(document.getElementById('mood-value').textContent);
+    const emocionDetectada = document.getElementById('mood-face').classList.contains('happy')
+        ? 'feliz'
+        : document.getElementById('mood-face').classList.contains('neutral')
+            ? 'neutral'
+            : 'triste';
+
+    let recomendacion = '';
+    if (nivelEstres >= 80) {
+        recomendacion = 'Sigue así, mantén tus hábitos positivos.';
+    } else if (nivelEstres >= 50) {
+        recomendacion = 'Tómate un descanso y haz algo que te guste.';
+    } else {
+        recomendacion = 'Habla con alguien de confianza o escribe lo que sientes.';
+    }
+
+    const emocionData = {
+        emocionDetectada: emocionDetectada,
+        nivelEstres: nivelEstres,
+        recomendacion: recomendacion,
+        emailUsuario: 'carlosperez@gmail.com'
     };
+
 
     fetch('/api/emociones', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(emocionData)
     })
-        .then(res => {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return;
-        })
-        .then(() => {
-            btn.innerHTML = '<i class="fas fa-check"></i> Guardado';
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fas fa-save"></i> Guardar registro';
-                btn.disabled = false;
-            }, 1500);
-            alert('Tu estado de ánimo ha sido registrado correctamente');
+        .then(async res => {
+            const text = await res.text();
+            if (!res.ok) throw new Error(text);
+            console.log("✅ Emoción guardada:", text);
+            alert("Estado emocional guardado correctamente");
         })
         .catch(err => {
-            console.error(err);
-            btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fas fa-save"></i> Guardar registro';
-                btn.disabled = false;
-            }, 1500);
-            alert('Ocurrió un error al guardar tu estado. Intenta nuevamente.');
+            console.error('❌ Error al guardar la emoción:', err);
+            alert("Ocurrió un error al guardar el estado emocional");
+        })
+        .finally(() => {
+            btn.innerHTML = '<i class="fas fa-save"></i> Guardar registro';
+            btn.disabled = false;
         });
 }
 
 function loadRecommendations() {
-    // Simular carga de recomendaciones desde el backend
     const recommendations = [
-        {
-            icon: 'spa',
-            title: 'Meditación guiada',
-            description: 'Prueba nuestra sesión de 10 minutos para reducir el estrés'
-        },
-        {
-            icon: 'music',
-            title: 'Sonidos relajantes',
-            description: 'Escucha nuestra playlist "Océano de Calma"'
-        },
-        {
-            icon: 'book',
-            title: 'Diario de gratitud',
-            description: 'Escribe 3 cosas por las que estés agradecido hoy'
-        },
-        {
-            icon: 'wind',
-            title: 'Ejercicio de respiración',
-            description: 'Técnica 4-7-8 para calmar la ansiedad'
-        }
+        { icon: 'spa', title: 'Meditación guiada', description: 'Prueba una sesión de 10 minutos para reducir el estrés' },
+        { icon: 'music', title: 'Sonidos relajantes', description: 'Escucha la playlist "Océano de Calma"' },
+        { icon: 'book', title: 'Diario de gratitud', description: 'Escribe 3 cosas por las que estés agradecido hoy' },
+        { icon: 'wind', title: 'Ejercicio de respiración', description: 'Técnica 4-7-8 para calmar la ansiedad' }
     ];
-
     const container = document.getElementById('recommendations');
     container.innerHTML = '';
-
     recommendations.forEach(rec => {
         const card = document.createElement('div');
         card.className = 'recommendation-card';
@@ -359,5 +402,4 @@ function loadRecommendations() {
         container.appendChild(card);
     });
 }
-
 

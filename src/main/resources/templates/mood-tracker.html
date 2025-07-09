@@ -131,6 +131,12 @@
             </button>
         </div>
 
+        <!-- Recomendaciones -->
+<div class="recommendations-section">
+    <h3><i class="fas fa-lightbulb"></i> Recomendaciones para ti</h3>
+    <div id="recommendations" class="recommendations-container"></div>
+</div>
+
         <!-- Gráfico histórico -->
         <div class="history-section">
             <h3><i class="fas fa-chart-line"></i> Tu historial emocional</h3>
@@ -144,23 +150,6 @@
             </div>
         </div>
 
-        <!-- Recomendaciones -->
-        <div class="recommendations-section">
-            <h3><i class="fas fa-lightbulb"></i> Recomendaciones para ti</h3>
-            <div class="recommendations-grid" id="recommendations">
-                <!-- Dinámicas desde la base de datos -->
-                <div class="recommendation-card">
-                    <i class="fas fa-spa"></i>
-                    <h4>Meditación guiada</h4>
-                    <p>Prueba nuestra sesión de 10 minutos para reducir el estrés</p>
-                </div>
-                <div class="recommendation-card">
-                    <i class="fas fa-music"></i>
-                    <h4>Sonidos relajantes</h4>
-                    <p>Escucha nuestra playlist "Océano de Calma"</p>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
