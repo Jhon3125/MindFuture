@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")
-                        .successHandler(successHandler) // REDIRECCIÓN AQUÍ
+                        .successHandler(successHandler)
                         .failureUrl("/auth/login?error=true")
                         .permitAll())
                 .logout(logout -> logout
@@ -40,7 +40,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(ex -> ex
-                        .accessDeniedPage("/error/403")
+                        .accessDeniedPage("/403")
                 );
 
         return http.build();
