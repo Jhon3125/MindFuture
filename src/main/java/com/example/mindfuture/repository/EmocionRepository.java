@@ -18,7 +18,8 @@ public interface EmocionRepository extends JpaRepository<Emocion, Integer> {
             Date fechaInicio,
             Date fechaFin);
 
-    List<Emocion> findByUsuarioIdUsuarioAndFechaRegistroBetweenOrderByFechaRegistroAsc(
+    //qlq esto esta implemntado ok?
+            List<Emocion> findByUsuarioIdUsuarioAndFechaRegistroBetweenOrderByFechaRegistroAsc(
             Integer idUsuario,
             Date desde,
             Date hasta);
