@@ -24,15 +24,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-<<<<<<< HEAD
-                        .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**", "/chat/**", "/api/emociones/**").permitAll()
-                        .requestMatchers("/vr-therapy", "/mood-tracker", "/mindfulness-game").authenticated()
-=======
                         .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**").permitAll()
                         .requestMatchers("/users/**", "/therapy/**", "/mood-tracker", "/mindfulness-game", "/suscription/**")
                         .hasAnyRole("usuario", "terapeuta", "admin")
                         .requestMatchers("/admin/**").hasRole("admin")
->>>>>>> d31345e4c886f2edb8d45e950e8fb0e090039097
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/auth/login")

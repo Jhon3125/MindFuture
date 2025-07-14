@@ -1,17 +1,19 @@
 let currentDate = new Date();
+
 document.addEventListener('DOMContentLoaded', function () {
     // Configuración inicial
     updateDateDisplay(currentDate);
 
     // Inicializar gráfico
     const ctx = document.getElementById('mood-chart').getContext('2d');
+
     const moodChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+            labels: [], // Se llenarán con fechas desde el backend
             datasets: [{
                 label: 'Estado de ánimo',
-                data: [65, 59, 80, 81, 56, 72, 90],
+                data: [],
                 fill: true,
                 backgroundColor: 'rgba(108, 99, 255, 0.2)',
                 borderColor: 'rgba(108, 99, 255, 1)',
@@ -42,61 +44,84 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.querySelectorAll('input[name="mood"]').forEach(radio => {
-        radio.addEventListener('change', function () {
-            const value = parseInt(this.value);
+    // 🔄 Función para cargar los datos desde el backend
+    function cargarDatosGrafico() {
+        fetch('/api/emociones/grafico')
+            .then(response => {
+                if (!response.ok) throw new Error('No autorizado o error de red');
+                return response.json();
+            })
+            .then(data => {
+                const labels = data.map(item => item.dia); // ← asegúrate que tu backend devuelve esto
+                const valores = data.map(item => item.nivelEstres);
 
-            // Convertimos el valor a moodValue (estrés del 1 al 100)
-            let emocionDetectada = ''; // nueva
-
-            switch (value) {
-                case 5:
-                    moodValue = 90;
-                    tags = ['Excelente', 'Positivo'];
-                    analysis = 'Te sientes excelente, ¡qué buena vibra!';
-                    emocionDetectada = 'excelente';
-                    break;
-                case 4:
-                    moodValue = 75;
-                    tags = ['Bien'];
-                    analysis = 'Parece que estás teniendo un buen día.';
-                    emocionDetectada = 'bien';
-                    break;
-                case 3:
-                    moodValue = 55;
-                    tags = ['Normal'];
-                    analysis = 'Un día equilibrado, sin altibajos.';
-                    emocionDetectada = 'normal';
-                    break;
-                case 2:
-                    moodValue = 35;
-                    tags = ['Mal'];
-                    analysis = 'Parece que estás algo decaído.';
-                    emocionDetectada = 'mal';
-                    break;
-                case 1:
-                    moodValue = 15;
-                    tags = ['Pésimo'];
-                    analysis = 'Ánimo. Habla con alguien.';
-                    emocionDetectada = 'pesimo';
-                    break;
-            }
-
-
-            // Llamamos a updateUI con los datos simulados
-            updateUI({
-                moodValue,
-                moodTags: tags,
-                moodAnalysis: analysis,
-                biometrics: {
-                    heartRate: 72,
-                    sleepHours: 7.5,
-                    energyLevel: 6
-                },
-                emocionDetectada // <--- esto es nuevo
+                moodChart.data.labels = labels;
+                moodChart.data.datasets[0].data = valores;
+                moodChart.update();
+            })
+            .catch(error => {
+                console.error('❌ Error al cargar gráfico:', error);
             });
+    }
 
+    // 📈 Llama a la función para cargar el gráfico
+    cargarDatosGrafico();
+});
+
+document.querySelectorAll('input[name="mood"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+        const value = parseInt(this.value);
+
+        // Convertimos el valor a moodValue (estrés del 1 al 100)
+        let emocionDetectada = ''; // nueva
+
+        switch (value) {
+            case 5:
+                moodValue = 90;
+                tags = ['Excelente', 'Positivo'];
+                analysis = 'Te sientes excelente, ¡qué buena vibra!';
+                emocionDetectada = 'excelente';
+                break;
+            case 4:
+                moodValue = 75;
+                tags = ['Bien'];
+                analysis = 'Parece que estás teniendo un buen día.';
+                emocionDetectada = 'bien';
+                break;
+            case 3:
+                moodValue = 55;
+                tags = ['Normal'];
+                analysis = 'Un día equilibrado, sin altibajos.';
+                emocionDetectada = 'normal';
+                break;
+            case 2:
+                moodValue = 35;
+                tags = ['Mal'];
+                analysis = 'Parece que estás algo decaído.';
+                emocionDetectada = 'mal';
+                break;
+            case 1:
+                moodValue = 15;
+                tags = ['Pésimo'];
+                analysis = 'Ánimo. Habla con alguien.';
+                emocionDetectada = 'pesimo';
+                break;
+        }
+
+
+        // Llamamos a updateUI con los datos simulados
+        updateUI({
+            moodValue,
+            moodTags: tags,
+            moodAnalysis: analysis,
+            biometrics: {
+                heartRate: 72,
+                sleepHours: 7.5,
+                energyLevel: 6
+            },
+            emocionDetectada // <--- esto es nuevo
         });
+
     });
 });
 
@@ -145,11 +170,11 @@ function updateDateDisplay(date) {
 
 function loadMoodData(date) {
     const fechaISO = date.toISOString().split('T')[0];
-    const emailUsuario = 'carlosperez@gmail.com';
+    const emailUsuario = emailUsuario;
 
     console.log(`🔄 Cargando datos para ${fechaISO}`);
 
-    fetch(`/api/emociones?email=${encodeURIComponent(emailUsuario)}&fecha=${fechaISO}`)
+    fetch(`/ api / emociones ? email = ${encodeURIComponent(emailUsuario)} & fecha=${fechaISO}`)
         .then(async res => {
             const text = await res.text();
             if (!res.ok) {
@@ -251,11 +276,13 @@ function guardarDatosEmocion(data) {
         recomendacion = 'Habla con alguien de confianza o escribe lo que sientes.';
     }
 
+    const emailUsuario = localStorage.getItem("emailUsuario");
+
     const emocionData = {
         emocionDetectada: emocionDetectada,
-        nivelEstres: data.moodValue,
+        nivelEstres: nivelEstres,
         recomendacion: recomendacion,
-        emailUsuario: 'carlosperez@gmail.com'
+        emailUsuario: emailUsuario
     };
 
     console.log("📤 Enviando datos a /api/emociones:", emocionData);
@@ -357,7 +384,7 @@ function saveMood() {
         emocionDetectada: emocionDetectada,
         nivelEstres: nivelEstres,
         recomendacion: recomendacion,
-        emailUsuario: 'carlosperez@gmail.com'
+        emailUsuario: emailUsuario
     };
 
 
@@ -395,7 +422,7 @@ function loadRecommendations() {
         const card = document.createElement('div');
         card.className = 'recommendation-card';
         card.innerHTML = `
-            <i class="fas fa-${rec.icon}"></i>
+< i class= "fas fa-${rec.icon}" ></i >
             <h4>${rec.title}</h4>
             <p>${rec.description}</p>
         `;

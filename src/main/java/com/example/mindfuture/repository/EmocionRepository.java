@@ -10,6 +10,7 @@ import com.example.mindfuture.model.Emocion;
 
 @Repository
 public interface EmocionRepository extends JpaRepository<Emocion, Integer> {
+
     List<Emocion> findByUsuarioIdUsuario(Integer idUsuario);
 
     Optional<Emocion> findTopByUsuarioIdUsuarioAndFechaRegistroBetween(
@@ -17,4 +18,10 @@ public interface EmocionRepository extends JpaRepository<Emocion, Integer> {
             Date fechaInicio,
             Date fechaFin);
 
+    List<Emocion> findByUsuarioIdUsuarioAndFechaRegistroBetweenOrderByFechaRegistroAsc(
+            Integer idUsuario,
+            Date desde,
+            Date hasta);
+
+    List<Emocion> findByUsuarioIdUsuarioOrderByFechaRegistroAsc(Integer idUsuario);
 }

@@ -1,12 +1,18 @@
 package com.example.mindfuture.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.mindfuture.dto.EmocionDTO;
@@ -130,6 +136,34 @@ public class EmocionController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error interno del servidor");
+        }
+    }
+
+    @GetMapping("/grafico")
+    public ResponseEntity<?> obtenerDatosGrafico(Authentication auth) {
+        try {
+            String email = auth.getName(); // Usuario autenticado
+            Usuario usuario = usuarioService.findByEmail(email);
+            if (usuario == null) {
+                return ResponseEntity.badRequest().body("Usuario no encontrado");
+            }
+
+            // Obtener los últimos 7 registros ordenados por fecha
+            List<Emocion> emociones = emocionRepository
+                    .findByUsuarioIdUsuarioOrderByFechaRegistroAsc(usuario.getIdUsuario());
+
+            // Transformar los datos para el gráfico
+            List<Map<String, Object>> datosGrafico = emociones.stream().map(e -> {
+                Map<String, Object> punto = new HashMap<>();
+                punto.put("dia", new SimpleDateFormat("EEE").format(e.getFechaRegistro())); // Ej: "Lun"
+                punto.put("nivelEstres", e.getNivelEstres());
+                return punto;
+            }).collect(Collectors.toList());
+
+            return ResponseEntity.ok(datosGrafico);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("❌ Error interno: " + e.getMessage());
         }
     }
 

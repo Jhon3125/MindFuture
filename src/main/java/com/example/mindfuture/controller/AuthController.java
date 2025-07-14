@@ -35,4 +35,6 @@ public class AuthController {
         authService.registerNewUser(usuario);
         return "redirect:/auth/login?registroExitoso=true";
     }
+
+    
 }
