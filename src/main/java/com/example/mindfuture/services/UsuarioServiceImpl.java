@@ -1,6 +1,7 @@
 package com.example.mindfuture.services;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,13 +17,30 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario findByEmail(String email) {
-        Optional<Usuario> optional = usuarioRepository.findByEmail(email);
-        return optional.orElse(null); // o puedes lanzar una excepción si prefieres
+        return usuarioRepository.findByEmail(email).orElse(null);
     }
 
     @Override
     public Usuario findByIdAndEmail(Object idUsuario, String emailUsuario) {
-        // Esto es opcional, según si tienes ese método en el repositorio
-        return null; // puedes implementar esto si es necesario
+        return usuarioRepository.findByIdUsuarioAndEmail((Long) idUsuario, emailUsuario).orElse(null);
+    }
+
+    @Override
+    public long countUsuarios() {
+        return usuarioRepository.count();
+    }
+
+@Override
+public Map<String, Long> countByTipoSuscripcion() {
+    return usuarioRepository.findAll().stream()
+        .collect(Collectors.groupingBy(
+            u -> u.getTipoSuscripcion().name(), // aquí se convierte el enum a String
+            Collectors.counting()
+        ));
+}
+
+    @Override
+    public List<Usuario> findUsuariosByRol(Usuario.Rol rol) {
+        return usuarioRepository.findByRol(rol);
     }
 }
