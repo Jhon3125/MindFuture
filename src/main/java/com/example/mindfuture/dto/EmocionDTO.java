@@ -4,7 +4,6 @@ public class EmocionDTO {
     private String emocionDetectada;
     private Integer nivelEstres;
     private String recomendacion;
-    private String emailUsuario;
 
     // Getters
     public String getEmocionDetectada() {
@@ -19,12 +18,7 @@ public class EmocionDTO {
         return recomendacion;
     }
 
-
-    public String getEmailUsuario() {
-        return emailUsuario;
-    }
-
-    // Setters con ajuste para fuente
+    // Setters
     public void setEmocionDetectada(String emocionDetectada) {
         this.emocionDetectada = emocionDetectada;
     }
@@ -35,9 +29,5 @@ public class EmocionDTO {
 
     public void setRecomendacion(String recomendacion) {
         this.recomendacion = recomendacion;
-    }
-
-    public void setEmailUsuario(String emailUsuario) {
-        this.emailUsuario = emailUsuario;
     }
 }

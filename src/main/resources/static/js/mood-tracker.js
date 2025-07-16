@@ -1,4 +1,8 @@
 let currentDate = new Date();
+// CSRF tokens accesibles globalmente
+const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
+
 
 document.addEventListener('DOMContentLoaded', function () {
     // Configuración inicial
@@ -153,7 +157,7 @@ document.getElementById('save-mood').addEventListener('click', saveMood);
 
 // Cargar datos iniciales
 loadMoodData(currentDate);
-loadRecommendations();
+
 
 // Simular datos de wearable
 setTimeout(() => {
@@ -170,11 +174,12 @@ function updateDateDisplay(date) {
 
 function loadMoodData(date) {
     const fechaISO = date.toISOString().split('T')[0];
-    const emailUsuario = emailUsuario;
+
 
     console.log(`🔄 Cargando datos para ${fechaISO}`);
 
-    fetch(`/ api / emociones ? email = ${encodeURIComponent(emailUsuario)} & fecha=${fechaISO}`)
+
+    fetch(`/api/emociones?fecha=${fechaISO}`)
         .then(async res => {
             const text = await res.text();
             if (!res.ok) {
@@ -276,20 +281,21 @@ function guardarDatosEmocion(data) {
         recomendacion = 'Habla con alguien de confianza o escribe lo que sientes.';
     }
 
-    const emailUsuario = localStorage.getItem("emailUsuario");
 
     const emocionData = {
         emocionDetectada: emocionDetectada,
-        nivelEstres: nivelEstres,
+        nivelEstres: data.moodValue,
         recomendacion: recomendacion,
-        emailUsuario: emailUsuario
     };
 
     console.log("📤 Enviando datos a /api/emociones:", emocionData);
 
     fetch('/api/emociones', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken
+        },
         body: JSON.stringify(emocionData)
     })
         .then(res => {
@@ -363,13 +369,14 @@ function saveMood() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
     btn.disabled = true;
 
-    // Obtener los datos mostrados en la pantalla
+    // Obtener datos actuales
     const nivelEstres = parseInt(document.getElementById('mood-value').textContent);
     const emocionDetectada = document.getElementById('mood-face').classList.contains('happy')
         ? 'feliz'
         : document.getElementById('mood-face').classList.contains('neutral')
             ? 'neutral'
             : 'triste';
+
 
     let recomendacion = '';
     if (nivelEstres >= 80) {
@@ -384,13 +391,14 @@ function saveMood() {
         emocionDetectada: emocionDetectada,
         nivelEstres: nivelEstres,
         recomendacion: recomendacion,
-        emailUsuario: emailUsuario
     };
-
 
     fetch('/api/emociones', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken
+        },
         body: JSON.stringify(emocionData)
     })
         .then(async res => {
@@ -409,24 +417,4 @@ function saveMood() {
         });
 }
 
-function loadRecommendations() {
-    const recommendations = [
-        { icon: 'spa', title: 'Meditación guiada', description: 'Prueba una sesión de 10 minutos para reducir el estrés' },
-        { icon: 'music', title: 'Sonidos relajantes', description: 'Escucha la playlist "Océano de Calma"' },
-        { icon: 'book', title: 'Diario de gratitud', description: 'Escribe 3 cosas por las que estés agradecido hoy' },
-        { icon: 'wind', title: 'Ejercicio de respiración', description: 'Técnica 4-7-8 para calmar la ansiedad' }
-    ];
-    const container = document.getElementById('recommendations');
-    container.innerHTML = '';
-    recommendations.forEach(rec => {
-        const card = document.createElement('div');
-        card.className = 'recommendation-card';
-        card.innerHTML = `
-< i class= "fas fa-${rec.icon}" ></i >
-            <h4>${rec.title}</h4>
-            <p>${rec.description}</p>
-        `;
-        container.appendChild(card);
-    });
-}
 

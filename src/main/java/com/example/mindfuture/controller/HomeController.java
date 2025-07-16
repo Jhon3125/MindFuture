@@ -1,8 +1,11 @@
 package com.example.mindfuture.controller;
 
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class HomeController {
@@ -14,7 +17,9 @@ public class HomeController {
     }
 
     @GetMapping("/mood-tracker")
-    public String moodTracker() {
+    public String moodTracker(Model model, HttpServletRequest request) {
+        CsrfToken token = (CsrfToken) request.getAttribute("_csrf");
+        model.addAttribute("_csrf", token);
         return "mood-tracker";
     }
 

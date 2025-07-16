@@ -19,13 +19,14 @@
                 <!-- Usuario autenticado -->
                 <li sec:authorize="isAuthenticated()" class="user-info">
                     <span class="user-name" th:text="${#authentication.principal.nombre}"></span>
-                    <span class="user-status"
-                        th:classappend="${#authentication.principal.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium} ? 'premium-badge' : 'free-badge'">
-                        <i class="fas fa-crown"
-                            th:if="${#authentication.principal.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium}"></i>
-                        <span
-                            th:text="${#authentication.principal.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium} ? 'Premium' : 'Free'"></span>
-                    </span>
+                   <span class="user-status"
+      th:classappend="${#authentication.principal.tipoSuscripcion.name() == 'premium'} ? ' premium-badge' : ' free-badge'">
+    
+    <i class="fas fa-crown"
+       th:if="${#authentication.principal.tipoSuscripcion.name() == 'premium'}"></i>
+
+    <span th:text="${#authentication.principal.tipoSuscripcion.name() == 'premium'} ? 'Premium' : 'Free'"></span>
+</span>
                 </li>
                 <li class="auth-buttons" sec:authorize="isAuthenticated()">
                     <form th:action="@{/logout}" method="post" class="logout-form">

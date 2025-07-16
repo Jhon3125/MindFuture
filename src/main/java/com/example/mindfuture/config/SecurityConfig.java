@@ -8,7 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -22,25 +21,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**").permitAll()
-                        .requestMatchers("/users/**", "/therapy/**", "/mood-tracker", "/mindfulness-game", "/suscription/**")
-                        .hasAnyRole("usuario", "terapeuta", "admin")
-                        .requestMatchers("/admin/**").hasRole("admin")
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/auth/login")
-                        .successHandler(successHandler)
-                        .failureUrl("/auth/login?error=true")
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/?logout")
-                        .permitAll()
-                )
-                .exceptionHandling(ex -> ex
-                        .accessDeniedPage("/403")
-                );
+            // CSRF habilitado por defecto (más seguro)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/", "/auth/**", "/css/**", "/js/**", "/img/**").permitAll()
+                .requestMatchers("/chat").hasAnyRole("usuario", "terapeuta", "admin") // ✅ Protección de /chat
+                .requestMatchers("/api/**").hasAnyRole("usuario", "terapeuta", "admin")
+                .requestMatchers("/users/**", "/therapy/**", "/mood-tracker",
+                                 "/mindfulness-game", "/suscription/**")
+                    .hasAnyRole("usuario", "terapeuta", "admin")
+                .requestMatchers("/admin/**").hasRole("admin")
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/auth/login")
+                .successHandler(successHandler)
+                .failureUrl("/auth/login?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/?logout")
+                .permitAll()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedPage("/403")
+            );
 
         return http.build();
     }

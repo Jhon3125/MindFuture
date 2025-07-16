@@ -1,13 +1,7 @@
 package com.example.mindfuture.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +32,12 @@ public class EmocionController {
 
     // ✅ POST: registrar o actualizar emoción del día
     @PostMapping
-    public ResponseEntity<?> registrarEmocion(@RequestBody EmocionDTO dto) {
+    public ResponseEntity<?> registrarEmocion(@RequestBody EmocionDTO dto, Authentication auth) {
         try {
-            Usuario usuario = usuarioService.findByEmail(dto.getEmailUsuario());
+            String email = auth.getName(); // Se obtiene el email del usuario autenticado
+            Usuario usuario = usuarioService.findByEmail(email);
             if (usuario == null) {
-                return ResponseEntity.badRequest().body("Usuario no encontrado: " + dto.getEmailUsuario());
+                return ResponseEntity.badRequest().body("Usuario no encontrado: " + email);
             }
 
             // Fecha actual: desde las 00:00 hasta 23:59:59.999
@@ -59,8 +54,9 @@ public class EmocionController {
             calendar.set(Calendar.MILLISECOND, 999);
             Date fechaFin = calendar.getTime();
 
-            Optional<Emocion> existente = emocionRepository.findTopByUsuarioIdUsuarioAndFechaRegistroBetween(
-                    usuario.getIdUsuario(), fechaInicio, fechaFin);
+            Optional<Emocion> existente = emocionRepository
+                .findTopByUsuarioIdUsuarioAndFechaRegistroBetween(
+                        usuario.getIdUsuario(), fechaInicio, fechaFin);
 
             Emocion emocion;
             if (existente.isPresent()) {
@@ -86,12 +82,11 @@ public class EmocionController {
         }
     }
 
-    // ✅ GET: obtener emoción por fecha y email
+    // ✅ GET: obtener emoción por fecha (usando sesión autenticada)
     @GetMapping
-    public ResponseEntity<?> obtenerEmocionPorFechaYEmail(
-            @RequestParam String email,
-            @RequestParam String fecha) {
+    public ResponseEntity<?> obtenerEmocionPorFecha(Authentication auth, @RequestParam String fecha) {
         try {
+            String email = auth.getName(); // Usuario autenticado
             Usuario usuario = usuarioService.findByEmail(email);
             if (usuario == null) {
                 return ResponseEntity.badRequest().body("Usuario no encontrado");
@@ -139,6 +134,7 @@ public class EmocionController {
         }
     }
 
+    // ✅ GET: obtener datos para gráfico (últimos días)
     @GetMapping("/grafico")
     public ResponseEntity<?> obtenerDatosGrafico(Authentication auth) {
         try {
@@ -148,7 +144,7 @@ public class EmocionController {
                 return ResponseEntity.badRequest().body("Usuario no encontrado");
             }
 
-            // Obtener los últimos 7 registros ordenados por fecha
+            // Obtener los registros ordenados por fecha
             List<Emocion> emociones = emocionRepository
                     .findByUsuarioIdUsuarioOrderByFechaRegistroAsc(usuario.getIdUsuario());
 
@@ -166,5 +162,4 @@ public class EmocionController {
             return ResponseEntity.status(500).body("❌ Error interno: " + e.getMessage());
         }
     }
-
 }
