@@ -32,11 +32,10 @@
                             <div class="user-name" sec:authentication="principal.nombre"
                                 th:text="${#authentication.principal.nombre}">Admin</div>
                             <div class="user-status">
-                                <i class="fas fa-crown me-1"
-                                    th:if="${#authentication.principal.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium}"></i>
+                               <i class="fas fa-crown me-1"
+                                th:if="${#authentication.principal.tipoSuscripcion.name() == 'PREMIUM'}"></i>
                                 <span
-                                    th:text="${#authentication.principal.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium} ? 'Premium' : 'Admin'">Admin</span>
-                            </div>
+                                th:text="${#authentication.principal.tipoSuscripcion.name() == 'PREMIUM'} ? 'Premium' : 'Admin'">Admin</span>
                         </div>
                     </div>
                     <form th:action="@{/logout}" method="post">
@@ -159,8 +158,8 @@
                                                 15/06/2023</td>
                                             <td>
                                                 <span
-                                                    th:class="${usuario.tipoSuscripcion == T(com.example.mindfuture.model.Usuario.TipoSuscripcion).premium} ? 'badge badge-premium' : 'badge badge-free'"
-                                                    th:text="${usuario.tipoSuscripcion}">Premium</span>
+                                                th:class="${usuario.tipoSuscripcion.name() == 'PREMIUM'} ? 'badge badge-premium' : 'badge badge-free'"
+                                                th:text="${usuario.tipoSuscripcion.name()}">Premium</span>
                                             </td>
                                             <td>
                                                 <button class="btn btn-sm btn-outline-primary">
@@ -177,6 +176,9 @@
             </div>
         </div>
     </div>
+
+    <pre th:text="${#objects.toString(suscripciones)}">sin datos</pre>
+
 
     <script>
         // Gráfico de suscripciones

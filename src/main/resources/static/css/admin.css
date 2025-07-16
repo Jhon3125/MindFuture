@@ -29,11 +29,8 @@ body {
     left: 0;
     width: var(--sidebar-width);
     height: 100vh;
-    background: var(--sidebar-bg);
-    color: var(--sidebar-text);
-    transition: all 0.3s;
+    background-color: #1f2a40;
     z-index: 1000;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-logo {
@@ -89,13 +86,9 @@ body {
 /* Main Content */
 #main-content {
     margin-left: var(--sidebar-width);
-    padding: 1.5rem;
-    transition: all 0.3s;
+    padding: 2rem;
     min-height: 100vh;
-    max-width: var(--max-container-width);
-    margin-right: auto;
-    margin-left: auto;
-    padding-left: calc(var(--sidebar-width) + 2rem);
+    background-color: #f8f9fa;
 }
 
 .main-container {

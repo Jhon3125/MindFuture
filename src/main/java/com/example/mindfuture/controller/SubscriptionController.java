@@ -22,7 +22,7 @@ public class SubscriptionController {
         if (subscriptionService.isPremium()) {
             return "redirect:/?alreadyPremium=true";
         }
-        model.addAttribute("precio", "49.99");
+        model.addAttribute("precio", "29.99");
         return "subscription/upgrade";
     }
 
